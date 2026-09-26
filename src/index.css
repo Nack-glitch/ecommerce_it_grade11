@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-display: 'Syne', sans-serif;
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --color-brand-orange: #ff5520;
+    --color-brand-orange-light: #ff6e3a;
+    --color-brand-accent: #ff5520;
+    --color-brand-red: #ff3e14;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #08090b;
+    color: #e5e7eb;
+    user-select: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display), var(--font-sans);
+  }
+
+  code, pre, .font-mono {
+    font-family: var(--font-mono);
+  }
+}
+
+/* Subtle background vertical guidelines matching the screenshot */
+.bg-slide-grid {
+  background-image: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.02) 1px,
+    transparent 1px
+  );
+  background-size: calc(100% / 12) 100%;
+}
+
+/* Smooth custom scrollbars for slide drawer / speaker notes */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 85, 32, 0.5);
+}

@@ -1,0 +1,6 @@
+{
+  "name": "Click to Commerce — E-Commerce Presentation Deck",
+  "description": "An interactive, executive-grade presentation slide deck exploring the modern e-commerce ecosystem from infrastructure and AI to logistics and future trends.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
