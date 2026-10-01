@@ -1,261 +1,265 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion } from 'motion/react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
   Play,
-  Pause,
   RotateCcw,
-  Smartphone,
-  Truck,
-  CheckCircle2,
-  MapPin,
-  Sparkles,
-  ShoppingBag,
-  CreditCard
+  ExternalLink,
+  Clock
 } from 'lucide-react';
 import { audioManager } from '../utils/audio';
 
 interface ProcessStep {
   stepNumber: string;
+  timeRange: string;
   timeSec: number;
-  timestamp: string;
-  title: string;
-  actor: string;
-  description: string;
-  metric: string;
+  category: string;
+  happening: string;
+  purpose: string;
 }
 
 export const VideoJourneyView: React.FC = () => {
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [currentProgressSeconds, setCurrentProgressSeconds] = useState<number>(0);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const YOUTUBE_VIDEO_ID = '3BTwBtWNqYE';
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
-  const videoDurationSec = 50;
-  const videoUrl = 'https://assets.mixkit.co/videos/preview/mixkit-motorcyclist-riding-down-a-city-street-41584-large.mp4';
-  const fallbackPoster = 'https://images.unsplash.com/photo-1526367790999-0150786686a2?auto=format&fit=crop&w=1600&q=80';
+  const [activeStepIndex, setActiveStepIndex] = useState<number>(0);
+  const [hasStarted, setHasStarted] = useState<boolean>(false);
+  const [currentStartSec, setCurrentStartSec] = useState<number>(0);
 
+  // Exact 4 Process Milestones table requested by the user:
   const steps: ProcessStep[] = [
     {
       stepNumber: '01',
+      timeRange: '00:00–00:15',
       timeSec: 0,
-      timestamp: '00:00',
-      title: 'Customer Orders & Pays with Telebirr',
-      actor: 'Customer (Deliver Addis Mobile App / Web)',
-      description: 'The buyer selects goods or food on Deliver Addis. Checkout completes in 3 seconds using an instant Telebirr QR scan or USSD payment approval.',
-      metric: 'Instant digital ticket'
+      category: '1. Introduction',
+      happening: 'App/service is introduced',
+      purpose: 'Shows the main idea'
     },
     {
       stepNumber: '02',
-      timeSec: 12,
-      timestamp: '00:12',
-      title: 'Merchant Prepares & Packs Sealed Order',
-      actor: 'Merchant / Kitchen Partner in Addis',
-      description: 'The local merchant receives the digital order ticket, inspects items, packs them into a thermal insulated bag, and applies a tamper-evident seal.',
-      metric: '10-minute prep SLA'
+      timeRange: '00:15–00:40',
+      timeSec: 15,
+      category: '2. Ordering',
+      happening: 'Customer selects items',
+      purpose: 'Demonstrates ordering'
     },
     {
       stepNumber: '03',
-      timeSec: 25,
-      timestamp: '00:25',
-      title: 'Motorcycle Courier Dispatched via Landmark Call',
-      actor: 'Deliver Addis Motorcycle Courier',
-      description: 'The courier picks up the order and navigates city traffic, calling the customer ahead of time to coordinate near known landmarks (e.g. "Bole Medhanialem").',
-      metric: 'Active phone routing'
+      timeRange: '00:40–01:05',
+      timeSec: 40,
+      category: '3. Processing',
+      happening: 'Order is sent to the restaurant',
+      purpose: 'Shows the system working'
     },
     {
       stepNumber: '04',
-      timeSec: 38,
-      timestamp: '00:38',
-      title: 'Doorstep Handover & SMS Verification',
-      actor: 'Customer Doorstep & Driver Mobile App',
-      description: 'The courier arrives at the buyer’s gate. The customer checks the package seal, shares the 4-digit SMS OTP code, and the order is marked completed.',
-      metric: 'Successful order verified'
+      timeRange: '01:05–01:30',
+      timeSec: 65,
+      category: '4. Delivery',
+      happening: 'Order is prepared/delivered',
+      purpose: 'Shows the final step'
     }
   ];
 
-  const activeStepIndex = steps.reduce((acc, curr, idx) => {
-    if (currentProgressSeconds >= curr.timeSec) return idx;
-    return acc;
-  }, 0);
-
   const activeStep = steps[activeStepIndex] || steps[0];
 
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isPlaying) {
-      interval = setInterval(() => {
-        setCurrentProgressSeconds((prev) => {
-          if (prev >= videoDurationSec) {
-            setIsPlaying(false);
-            return 0;
-          }
-          return prev + 1;
-        });
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isPlaying]);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.play().catch(() => {});
-      } else {
-        videoRef.current.pause();
+  // Fast seek via YouTube iframe API postMessage for sub-10ms jumping with zero reload
+  const seekYouTubeTo = useCallback((seconds: number) => {
+    if (iframeRef.current && iframeRef.current.contentWindow) {
+      try {
+        iframeRef.current.contentWindow.postMessage(
+          JSON.stringify({
+            event: 'command',
+            func: 'seekTo',
+            args: [seconds, true]
+          }),
+          '*'
+        );
+        iframeRef.current.contentWindow.postMessage(
+          JSON.stringify({
+            event: 'command',
+            func: 'playVideo',
+            args: []
+          }),
+          '*'
+        );
+      } catch (err) {
+        // Safe fallback
       }
     }
-  }, [isPlaying]);
+  }, []);
 
-  const formatSeconds = (sec: number) => {
-    const mins = Math.floor(sec / 60);
-    const s = sec % 60;
-    return `${mins.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  const handleSelectStep = (idx: number) => {
+    audioManager.playTick();
+    const targetStep = steps[idx];
+    setActiveStepIndex(idx);
+
+    if (!hasStarted) {
+      setCurrentStartSec(targetStep.timeSec);
+      setHasStarted(true);
+    } else {
+      seekYouTubeTo(targetStep.timeSec);
+    }
+  };
+
+  const handleStartPlayback = () => {
+    audioManager.playAction();
+    setCurrentStartSec(activeStep.timeSec);
+    setHasStarted(true);
+  };
+
+  const handleRestartVideo = () => {
+    audioManager.playTick();
+    setActiveStepIndex(0);
+    if (hasStarted) {
+      seekYouTubeTo(0);
+    } else {
+      setCurrentStartSec(0);
+      setHasStarted(true);
+    }
   };
 
   return (
-    <div className="w-full flex flex-col justify-start space-y-2.5 pb-4">
-      {/* Video Theater Screen */}
-      <div className="relative w-full aspect-video max-h-[30vh] sm:max-h-[34vh] rounded-2xl sm:rounded-3xl overflow-hidden border border-white/10 bg-black shadow-2xl flex flex-col justify-between p-3.5 sm:p-4.5">
-        <video
-          ref={videoRef}
-          src={videoUrl}
-          poster={fallbackPoster}
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover opacity-50 transition-opacity duration-700"
-        />
-
-        <div className="absolute inset-0 bg-gradient-to-t from-[#ff5520]/25 via-red-950/25 to-black/80 mix-blend-multiply opacity-80 pointer-events-none" />
-        <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
-
-        {/* Top Header Inside Video */}
-        <div className="relative z-10 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold tracking-widest bg-black/70 text-white border border-white/20 backdrop-blur-md uppercase">
-              DELIVER ADDIS · ETHIOPIA
+    <div className="w-full h-full flex flex-col justify-between space-y-1.5 sm:space-y-2">
+      {/* Top Telemetry Strip */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] backdrop-blur-md shrink-0">
+        <div className="flex items-center gap-2">
+          <span className="px-2 py-0.5 rounded-md text-[11px] sm:text-xs font-mono font-black uppercase bg-[#ff5520]/20 text-[#ff5520] border border-[#ff5520]/40">
+            {activeStep.category}
+          </span>
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-white font-bold">{activeStep.happening}</span>
+            <span className="text-zinc-500 hidden md:inline">·</span>
+            <span className="text-emerald-400 font-medium hidden md:inline">
+              Purpose: {activeStep.purpose}
             </span>
-            <span className="px-2 py-0.5 rounded text-[10px] font-mono text-[#ff5520] bg-[#ff5520]/15 border border-[#ff5520]/30 font-bold hidden sm:inline">
-              SINGLE LOCAL COMPANY PROCESS
-            </span>
-          </div>
-          <div className="flex items-center gap-2 font-mono text-xs text-zinc-300 bg-black/70 px-3 py-1 rounded-full backdrop-blur-md border border-white/10">
-            <span className="text-white font-bold">{formatSeconds(currentProgressSeconds)}</span>
-            <span>/</span>
-            <span>{formatSeconds(videoDurationSec)}</span>
           </div>
         </div>
 
-        {/* Center Live Stage Telemetry */}
-        <div className="relative z-10 my-auto flex flex-col sm:flex-row items-center sm:items-end justify-between gap-3">
-          <div className="space-y-1 max-w-xl text-center sm:text-left">
-            <div className="inline-flex items-center gap-2 text-xs font-mono text-[#ff5520] uppercase font-bold">
-              <span>Step 0{activeStep.stepNumber} of 04</span>
-              <span>·</span>
-              <span>{activeStep.timestamp}</span>
-              <span>·</span>
-              <span className="text-zinc-300">{activeStep.actor}</span>
-            </div>
-            <h3 className="text-lg sm:text-2xl font-black text-white tracking-tight">
-              {activeStep.title}
-            </h3>
-            <p className="text-xs sm:text-sm text-zinc-200 leading-relaxed max-w-lg line-clamp-2 sm:line-clamp-none">
-              {activeStep.description}
-            </p>
+        <div className="flex items-center gap-2.5 shrink-0">
+          <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-300">
+            <Clock className="w-3.5 h-3.5 text-[#ff5520]" />
+            <span className="font-bold text-white">{activeStep.timeRange}</span>
           </div>
 
-          <div className="hidden sm:flex flex-col gap-1 shrink-0 bg-black/70 border border-white/15 p-2.5 rounded-xl backdrop-blur-xl">
-            <span className="text-[10px] font-mono text-zinc-400 uppercase">Process Metric:</span>
-            <span className="text-xs font-mono font-bold text-emerald-400">{activeStep.metric}</span>
-          </div>
-        </div>
-
-        {/* Video Player Action Overlay on pause */}
-        {!isPlaying && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/45 backdrop-blur-[2px]">
-            <button
-              onClick={() => {
-                audioManager.playAction();
-                setIsPlaying(true);
-              }}
-              className="group px-6 sm:px-7 py-3 rounded-full bg-[#ff5520] hover:bg-[#ff6e3a] text-black font-extrabold text-xs sm:text-sm tracking-widest uppercase flex items-center gap-2.5 transition-all cursor-pointer shadow-xl shadow-[#ff5520]/40 transform hover:scale-105"
-            >
-              <Play className="w-4 h-4 fill-current" />
-              <span>WATCH DELIVER ADDIS PROCESS VIDEO</span>
-            </button>
-          </div>
-        )}
-
-        {/* Bottom Playback scrub line */}
-        <div className="relative z-10">
-          <div
-            className="w-full h-2 bg-white/20 rounded-full overflow-hidden cursor-pointer"
-            onClick={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const ratio = (e.clientX - rect.left) / rect.width;
-              setCurrentProgressSeconds(Math.floor(ratio * videoDurationSec));
-            }}
+          <a
+            href={`https://www.youtube.com/watch?v=${YOUTUBE_VIDEO_ID}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-white/5 hover:bg-white/10 text-zinc-300 hover:text-white text-[11px] font-mono transition-colors"
+            title="Open on YouTube"
           >
-            <div
-              className="h-full bg-gradient-to-r from-[#ff5520] to-[#ff6e3a] transition-all duration-200 shadow-[0_0_10px_rgba(255,85,32,0.8)]"
-              style={{ width: `${(currentProgressSeconds / videoDurationSec) * 100}%` }}
-            />
-          </div>
+            <span>YouTube</span>
+            <ExternalLink className="w-3 h-3 text-[#ff5520]" />
+          </a>
         </div>
       </div>
 
-      {/* Underneath: 4-Step Process Milestones */}
-      <div>
-        <div className="flex items-center justify-between text-xs text-zinc-400 font-mono mb-1.5 px-1">
-          <div className="flex items-center gap-2">
-            <span className="text-[#ff5520] font-bold">PROCESS STEPS:</span>
-            <span>Click any step to scrub video</span>
+      {/* Fast YouTube Video Theater Stage (Calibrated Height so Nothing is Cut) */}
+      <div className="relative w-full h-[180px] sm:h-[210px] md:h-[240px] max-h-[30vh] rounded-2xl overflow-hidden border border-white/10 bg-black shadow-xl shrink-0">
+        {hasStarted ? (
+          <iframe
+            ref={iframeRef}
+            src={`https://www.youtube-nocookie.com/embed/${YOUTUBE_VIDEO_ID}?autoplay=1&enablejsapi=1&start=${currentStartSec}&rel=0&modestbranding=1&playsinline=1`}
+            title="Deliver Addis Process Video"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            loading="eager"
+            className="w-full h-full border-0"
+          />
+        ) : (
+          /* Instant Fast-Launch Poster */
+          <div className="relative w-full h-full flex flex-col justify-between p-3 sm:p-4">
+            <img
+              src={`https://i.ytimg.com/vi/${YOUTUBE_VIDEO_ID}/hqdefault.jpg`}
+              alt="Deliver Addis Video Poster"
+              className="absolute inset-0 w-full h-full object-cover opacity-60"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/70 pointer-events-none" />
+
+            <div className="relative z-10 flex items-center justify-between">
+              <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-black tracking-wider bg-black/80 text-white border border-white/20 backdrop-blur-md uppercase">
+                DELIVER ADDIS · ETHIOPIA
+              </span>
+              <span className="px-2 py-0.5 rounded text-[11px] font-mono text-[#ff5520] bg-[#ff5520]/20 border border-[#ff5520]/40 font-black">
+                4 PROCESS MILESTONES
+              </span>
+            </div>
+
+            <div className="relative z-10 my-auto text-center space-y-1.5">
+              <button
+                onClick={handleStartPlayback}
+                className="group inline-flex items-center gap-2.5 px-6 py-2.5 sm:px-7 sm:py-3 rounded-full bg-[#ff5520] hover:bg-[#ff6e3a] text-black font-black text-xs sm:text-sm tracking-wider uppercase transition-all duration-200 cursor-pointer shadow-xl shadow-[#ff5520]/50 transform hover:scale-105"
+              >
+                <Play className="w-4 h-4 fill-current" />
+                <span>CLICK TO PLAY VIDEO IMMEDIATELY</span>
+              </button>
+              <p className="text-[11px] sm:text-xs text-zinc-200 font-medium">
+                Click above or choose any step below to jump to that timestamp
+              </p>
+            </div>
+
+            <div className="relative z-10 flex items-center justify-between text-[11px] font-mono text-zinc-300">
+              <span>Ready at Step 01 ({steps[0].timeRange})</span>
+              <span>Fast Stream Enabled</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                audioManager.playTick();
-                setIsPlaying(!isPlaying);
-              }}
-              className="px-2.5 py-0.5 rounded-lg bg-white/5 hover:bg-white/10 text-white font-mono text-xs flex items-center gap-1.5 cursor-pointer"
-            >
-              {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-              <span>{isPlaying ? 'Pause' : 'Play'}</span>
-            </button>
-            <button
-              onClick={() => {
-                audioManager.playTick();
-                setCurrentProgressSeconds(0);
-              }}
-              className="p-1 rounded-lg bg-white/5 hover:bg-white/10 text-zinc-400 hover:text-white cursor-pointer"
-              title="Reset Video Timeline"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
+        )}
+      </div>
+
+      {/* 4 Interactive Process Steps (Exact Table from User) */}
+      <div className="space-y-1 shrink-0">
+        <div className="flex items-center justify-between text-xs text-zinc-300 font-mono px-0.5 font-bold">
+          <div className="flex items-center gap-1.5">
+            <span className="text-[#ff5520] font-black">PROCESS STEPS:</span>
+            <span className="hidden sm:inline text-zinc-400">00:00 Introduction · 00:15 Ordering · 00:40 Processing · 01:05 Delivery</span>
           </div>
+
+          <button
+            onClick={handleRestartVideo}
+            className="flex items-center gap-1 px-2 py-0.5 rounded bg-white/10 hover:bg-white/15 text-white font-mono text-[11px] cursor-pointer transition-colors"
+            title="Restart video from beginning"
+          >
+            <RotateCcw className="w-3 h-3 text-[#ff5520]" />
+            <span>Restart (00:00)</span>
+          </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+        {/* 4 Responsive Cards Matching the User's Exact 4-Column Table */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
           {steps.map((step, idx) => {
-            const isCurrent = activeStepIndex === idx;
+            const isSelected = activeStepIndex === idx;
             return (
               <button
                 key={step.stepNumber}
-                onClick={() => {
-                  audioManager.playTick();
-                  setCurrentProgressSeconds(step.timeSec);
-                }}
-                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
-                  isCurrent
-                    ? 'bg-[#ff5520]/15 border-[#ff5520] text-white ring-1 ring-[#ff5520]/40'
-                    : 'bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.05]'
+                onClick={() => handleSelectStep(idx)}
+                className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between group ${
+                  isSelected
+                    ? 'bg-[#ff5520]/20 border-[#ff5520] ring-2 ring-[#ff5520]/50 shadow-md shadow-[#ff5520]/20'
+                    : 'bg-white/[0.03] border-white/[0.08] hover:border-white/20 hover:bg-white/[0.05]'
                 }`}
               >
-                <div className="flex items-center justify-between mb-0.5">
-                  <span className="text-[10px] font-mono text-[#ff5520] font-bold">{step.timestamp}</span>
-                  <span className="text-[9px] font-mono text-zinc-500">Step 0{idx + 1}</span>
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-xs font-mono font-black text-[#ff5520]">
+                      {step.timeRange}
+                    </span>
+                    <span className="text-[10px] font-mono text-zinc-400 bg-white/10 px-1.5 py-0.2 rounded font-bold">
+                      Step 0{idx + 1}
+                    </span>
+                  </div>
+
+                  <h4 className="text-xs sm:text-sm font-black text-white group-hover:text-[#ff5520] transition-colors truncate">
+                    {step.category}
+                  </h4>
+
+                  <p className="text-[11px] text-zinc-200 mt-0.5 font-medium line-clamp-1">
+                    {step.happening}
+                  </p>
                 </div>
-                <div className="text-xs font-bold truncate text-white">{step.title}</div>
-                <div className="text-[10px] text-zinc-400 truncate mt-0.5">{step.actor}</div>
+
+                <div className="mt-2 pt-1 border-t border-white/[0.08] text-[10px] sm:text-[11px] font-mono text-emerald-400 font-bold truncate">
+                  Purpose: <span className="text-zinc-300 font-normal">{step.purpose}</span>
+                </div>
               </button>
             );
           })}

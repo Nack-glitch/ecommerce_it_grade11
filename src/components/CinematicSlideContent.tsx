@@ -1,35 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, type Variants } from 'motion/react';
 import {
   ArrowRight,
   Sparkles,
   Layers,
   ShieldCheck,
-  TrendingUp,
   Cpu,
   Truck,
   CheckCircle2,
   AlertTriangle,
   Globe,
   Lock,
-  Search,
   ShoppingCart,
   DollarSign,
-  Maximize2,
-  RefreshCw,
-  PackageCheck,
   Store,
-  ChevronRight,
-  ExternalLink,
-  HelpCircle,
-  Clock,
-  ArrowDown,
-  User,
   Users,
-  Building,
+  User,
   GraduationCap,
-  Award,
-  Heart,
   RotateCcw,
   Home
 } from 'lucide-react';
@@ -39,8 +26,44 @@ import { VideoJourneyView } from './VideoJourneyView';
 import { EthiopiaSectionView } from './EthiopiaSectionView';
 import { DEFAULT_STUDENTS, StudentCredit } from '../data/presentationData';
 
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.05
+    }
+  }
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 18, scale: 0.98 },
+  show: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.42,
+      ease: [0.16, 1, 0.3, 1] as const
+    }
+  }
+};
+
+const headerVariants: Variants = {
+  hidden: { opacity: 0, y: -16 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.45,
+      ease: [0.16, 1, 0.3, 1] as const
+    }
+  }
+};
+
 interface CinematicSlideProps {
-  slideId: number; // 0 to 12
+  slideId: number; // 0 to 11
   onEnterPresentation: () => void;
   onNext: () => void;
   onSelectSlide: (index: number) => void;
@@ -55,250 +78,295 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
   // State for interactive features in individual slides
   const [selectedPillarType, setSelectedPillarType] = useState<number>(0);
   const [activeLifecycleStep, setActiveLifecycleStep] = useState<number>(0);
-  const [selectedAdvantageCategory, setSelectedAdvantageCategory] = useState<'customer' | 'business' | 'economy'>('customer');
-  const [activeChallengeRisk, setActiveChallengeRisk] = useState<number>(0);
   const [selectedComponent, setSelectedComponent] = useState<number>(0);
 
-  // Group Members state (editable directly by students in UI)
-  const [students, setStudents] = useState<StudentCredit[]>(DEFAULT_STUDENTS);
-  const [editingStudentId, setEditingStudentId] = useState<number | null>(null);
+  // Group Members state
+  const [students] = useState<StudentCredit[]>(DEFAULT_STUDENTS);
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  // Always reset scroll to the top when navigating to any slide
+  // Always reset scroll to top on slide change
   useEffect(() => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = 0;
     }
   }, [slideId]);
 
-  const handleUpdateStudent = (id: number, field: 'name' | 'rollNumber' | 'role', val: string) => {
-    setStudents(prev => prev.map(s => s.id === id ? { ...s, [field]: val } : s));
-  };
-
   return (
     <div
       ref={scrollContainerRef}
-      className="relative w-full h-full flex flex-col justify-start items-center px-3 sm:px-6 md:px-10 lg:px-14 py-2 sm:py-3 overflow-y-auto"
+      className={`relative w-full h-full flex flex-col items-center px-4 sm:px-6 md:px-8 lg:px-10 py-2 sm:py-3 overflow-y-auto ${
+        slideId === 9 ? 'justify-start' : 'justify-center'
+      }`}
     >
       {/* =========================================================================
-          SLIDE 00: OPENING SCREEN (WITH PROMINENT SCHOOL NAME & ORANGE-RED ACCENT)
+          SLIDE 00: OPENING SCREEN (TRUE FULL SCREEN KEYNOTE)
           ========================================================================= */}
       {slideId === 0 && (
-        <div className="relative max-w-5xl mx-auto w-full space-y-6 sm:space-y-7 my-auto">
-          {/* Subtle ambient floating nodes in energetic orange / red */}
-          <div className="absolute -top-24 -left-20 w-72 h-72 rounded-full bg-[#ff5520]/15 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-24 -right-20 w-80 h-80 rounded-full bg-red-600/10 blur-3xl pointer-events-none" />
+        <div className="relative w-full h-full flex flex-col justify-between py-2 sm:py-4 text-left overflow-hidden">
+          {/* Ambient Glow */}
+          <div className="absolute -top-20 -left-16 w-80 h-80 rounded-full bg-[#ff5520]/20 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-20 -right-16 w-96 h-96 rounded-full bg-red-600/15 blur-3xl pointer-events-none" />
 
-          {/* Section Kicker */}
-          <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-            className="flex items-center gap-3"
-          >
-            <span className="w-2 h-2 rounded-full bg-[#ff5520] animate-ping" />
-            <span className="text-xs sm:text-sm font-mono tracking-[0.28em] text-zinc-400 uppercase">
-              GRADE 11 INFORMATION TECHNOLOGY · UNIT 1.3.4
-            </span>
-          </motion.div>
-
-          {/* Large Title & Subtitle */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="space-y-3"
-          >
-            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight uppercase leading-[0.92] select-none">
-              <span className="text-white">E-</span>
-              <span className="text-[#ff5520]">COMMERCE</span>
-            </h1>
-            <div className="w-28 h-1 bg-gradient-to-r from-[#ff5520] to-transparent rounded-full shadow-[0_0_8px_rgba(255,85,32,0.6)]" />
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-zinc-200 tracking-tight pt-1">
-              Electronic Commerce
-            </h2>
-          </motion.div>
-
-          {/* School Name Prominently Displayed Below Subtitle */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.18 }}
-            className="inline-flex items-center gap-2.5 px-4 py-2 rounded-2xl bg-[#ff5520]/10 border border-[#ff5520]/30 text-white backdrop-blur-md shadow-lg shadow-[#ff5520]/5"
-          >
-            <GraduationCap className="w-4 h-4 text-[#ff5520]" />
-            <span className="text-xs sm:text-sm font-extrabold tracking-widest uppercase font-mono text-[#ff5520]">
-              IFA BORU BITE SPECIAL SECONDARY SCHOOL
-            </span>
-          </motion.div>
-
-          {/* Narrative text from prompt */}
-          <motion.p
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.22 }}
-            className="text-base sm:text-lg text-zinc-400 max-w-2xl leading-relaxed font-light"
-          >
-            A modern presentation about how technology transformed buying, selling, payments, logistics, and digital business.
-          </motion.p>
-
-          {/* Abstract elegant network badges */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-1"
-          >
-            {[
-              { label: 'Shopping', icon: ShoppingCart },
-              { label: 'Payments', icon: DollarSign },
-              { label: 'Logistics', icon: Truck },
-              { label: 'Digital Networks', icon: Globe },
-              { label: 'Mobile Commerce', icon: Sparkles }
-            ].map((pillar) => {
-              const Icon = pillar.icon;
-              return (
-                <div
-                  key={pillar.label}
-                  className="flex items-center gap-2 p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm"
-                >
-                  <Icon className="w-3.5 h-3.5 text-[#ff5520]" />
-                  <span className="text-xs font-mono text-zinc-300 truncate">{pillar.label}</span>
-                </div>
-              );
-            })}
-          </motion.div>
-
-          {/* ENTER PRESENTATION BUTTON */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-            className="pt-2"
-          >
-            <button
-              onClick={() => {
-                audioManager.playAction();
-                onEnterPresentation();
-              }}
-              className="group inline-flex items-center gap-3 px-8 py-4 rounded-full bg-[#ff5520] hover:bg-[#ff6e3a] text-black font-extrabold text-sm sm:text-base tracking-wider uppercase transition-all duration-200 shadow-xl shadow-[#ff5520]/30 cursor-pointer transform hover:-translate-y-0.5"
+          {/* Top Banner Row */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shrink-0">
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4 }}
+              className="flex items-center gap-2.5"
             >
-              <span>ENTER PRESENTATION</span>
-              <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1" />
-            </button>
-          </motion.div>
+              <span className="w-2.5 h-2.5 rounded-full bg-[#ff5520] animate-ping" />
+              <span className="text-xs sm:text-sm md:text-base font-mono font-bold tracking-[0.22em] text-zinc-300 uppercase">
+                GRADE 11 INFORMATION TECHNOLOGY · UNIT 1.3.4
+              </span>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-xl bg-[#ff5520]/15 border border-[#ff5520]/40 text-white backdrop-blur-md shadow-md shadow-[#ff5520]/10 w-fit"
+            >
+              <GraduationCap className="w-4 h-4 text-[#ff5520]" />
+              <span className="text-xs sm:text-sm md:text-base font-black tracking-widest uppercase font-mono text-[#ff5520]">
+                IFA BORU BITE SPECIAL SECONDARY SCHOOL
+              </span>
+            </motion.div>
+          </div>
+
+          {/* Center Epic Title & Narrative */}
+          <div className="my-auto space-y-2.5 sm:space-y-3.5 py-1">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="space-y-1 max-w-full"
+            >
+              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[5rem] xl:text-[5.5rem] font-black tracking-tight uppercase leading-none select-none max-w-full">
+                <span className="text-white">E-</span>
+                <span className="text-[#ff5520]">COMMERCE</span>
+              </h1>
+              <div className="w-32 h-1.5 bg-gradient-to-r from-[#ff5520] to-transparent rounded-full shadow-[0_0_12px_rgba(255,85,32,0.9)]" />
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-zinc-100 tracking-tight pt-0.5">
+                Electronic Commerce
+              </h2>
+            </motion.div>
+
+            <motion.p
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.22 }}
+              className="text-base sm:text-lg md:text-xl text-zinc-200 max-w-3xl leading-relaxed font-normal"
+            >
+              A modern presentation about how technology transformed buying, selling, payments, logistics, and digital business.
+            </motion.p>
+          </div>
+
+          {/* Bottom Area: 5 Network Badges + Enter Presentation CTA */}
+          <div className="space-y-2.5 shrink-0 pt-1 border-t border-white/[0.08]">
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5"
+            >
+              {[
+                { label: 'Shopping', icon: ShoppingCart },
+                { label: 'Payments', icon: DollarSign },
+                { label: 'Logistics', icon: Truck },
+                { label: 'Digital Networks', icon: Globe },
+                { label: 'Mobile Commerce', icon: Sparkles }
+              ].map((pillar) => {
+                const Icon = pillar.icon;
+                return (
+                  <div
+                    key={pillar.label}
+                    className="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.1] backdrop-blur-sm shadow-sm"
+                  >
+                    <Icon className="w-4 h-4 text-[#ff5520] shrink-0" />
+                    <span className="text-xs sm:text-sm font-bold font-mono text-zinc-100 truncate">
+                      {pillar.label}
+                    </span>
+                  </div>
+                );
+              })}
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.38 }}
+              className="flex items-center justify-between pt-0.5"
+            >
+              <button
+                onClick={() => {
+                  audioManager.playAction();
+                  onEnterPresentation();
+                }}
+                className="group inline-flex items-center gap-3 px-8 py-3.5 sm:px-9 sm:py-4 rounded-full bg-[#ff5520] hover:bg-[#ff6e3a] text-black font-black text-sm sm:text-base md:text-lg tracking-wider uppercase transition-all duration-200 shadow-xl shadow-[#ff5520]/35 cursor-pointer transform hover:-translate-y-0.5"
+              >
+                <span>ENTER PRESENTATION</span>
+                <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1.5" />
+              </button>
+
+              <span className="hidden sm:inline-block text-xs sm:text-sm font-mono text-zinc-400">
+                Press <kbd className="px-2 py-0.5 rounded bg-white/10 text-white font-bold">Space</kbd> or <kbd className="px-2 py-0.5 rounded bg-white/10 text-white font-bold">→</kbd> to begin
+              </span>
+            </motion.div>
+          </div>
         </div>
       )}
 
       {/* =========================================================================
-          SLIDE 01: DEFINITION — WHAT IS E-COMMERCE? (INCLUDES SCHOOL NAME)
+          SLIDE 01: DEFINITION — WHAT IS E-COMMERCE?
           ========================================================================= */}
       {slideId === 1 && (
-        <div className="max-w-6xl space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-3">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full space-y-4 my-auto relative"
+        >
+          {/* Ambient Glow */}
+          <motion.div
+            animate={{ opacity: [0.1, 0.2, 0.1], scale: [1, 1.06, 1] }}
+            transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -top-10 -right-10 w-80 h-80 bg-[#ff5520]/20 rounded-full blur-3xl pointer-events-none -z-10"
+          />
+
+          {/* Slide Header */}
+          <motion.div
+            variants={headerVariants}
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-2.5"
+          >
             <div>
-              <div className="text-xs font-mono text-[#ff5520] tracking-widest uppercase">
+              <div className="text-xs sm:text-sm font-mono text-[#ff5520] font-black tracking-widest uppercase">
                 SLIDE 01 — DEFINITION
               </div>
-              <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight">
                 What is E-Commerce?
               </h2>
             </div>
-            {/* School Name on Slide 01 */}
-            <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/[0.04] border border-[#ff5520]/40 text-[#ff5520] text-xs font-mono font-bold">
+            <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/[0.04] border border-[#ff5520]/40 text-[#ff5520] text-xs sm:text-sm font-mono font-bold shadow-sm">
               <GraduationCap className="w-4 h-4 shrink-0 text-[#ff5520]" />
               <span>IFA BORU BITE SPECIAL SECONDARY SCHOOL</span>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Large Definition Statement from Textbook */}
-          <div className="p-6 sm:p-7 rounded-3xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-1.5 h-full bg-[#ff5520]" />
-            <p className="text-xl sm:text-2xl lg:text-3xl font-light text-white leading-snug">
+          {/* Large Textbook Definition Statement */}
+          <motion.div
+            variants={itemVariants}
+            whileHover={{ scale: 1.01, borderColor: 'rgba(255, 85, 32, 0.45)' }}
+            className="p-5 sm:p-7 rounded-3xl bg-white/[0.04] border border-white/[0.1] backdrop-blur-md relative overflow-hidden shadow-lg transition-all"
+          >
+            <div className="absolute top-0 left-0 w-2 h-full bg-[#ff5520]" />
+            <p className="text-xl sm:text-3xl lg:text-4xl font-semibold text-white leading-snug pl-2">
               “E-commerce is the buying and selling of goods and services over the Internet.”
             </p>
-            <span className="block mt-2 text-xs font-mono text-zinc-400">
+            <span className="block mt-2 pl-2 text-xs sm:text-sm font-mono text-[#ff5520] font-bold">
               Grade 11 IT Textbook · Unit 1.3.4 Foundational Principle
             </span>
-          </div>
+          </motion.div>
 
-          {/* Visual Ecosystem Flow */}
-          <div className="space-y-2">
-            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider block">
+          {/* Visual Ecosystem Value Chain (6 steps) */}
+          <motion.div variants={itemVariants} className="space-y-1.5">
+            <span className="text-xs sm:text-sm font-mono text-zinc-300 uppercase tracking-wider font-bold block">
               The Digital Ecosystem Value Chain:
             </span>
-            <div className="grid grid-cols-2 sm:grid-cols-6 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-6 gap-2.5">
               {[
                 { title: 'CUSTOMER', sub: 'Intent & Search' },
-                { title: 'DIGITAL STOREFRONT', sub: 'Web, App & Social' },
+                { title: 'STOREFRONT', sub: 'Web, App & Social' },
                 { title: 'PAYMENT', sub: 'Auth & Mobile Rail' },
                 { title: 'ORDER SYSTEM', sub: 'Routing & Inventory' },
                 { title: 'LOGISTICS', sub: 'WMS & Transporter' },
                 { title: 'DELIVERY', sub: 'Doorstep Handover' }
               ].map((step, idx) => (
-                <div
+                <motion.div
                   key={step.title}
-                  className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex flex-col justify-between"
+                  variants={itemVariants}
+                  whileHover={{ y: -4, scale: 1.03, borderColor: 'rgba(255, 85, 32, 0.45)' }}
+                  className="p-3 sm:p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex flex-col justify-between cursor-default transition-colors"
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-mono font-bold text-[#ff5520]">0{idx + 1}</span>
-                    <span className="text-zinc-600 text-xs">→</span>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-sm sm:text-base font-mono font-black text-[#ff5520]">0{idx + 1}</span>
+                    <span className="text-zinc-400 font-bold text-sm">→</span>
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-white leading-tight">{step.title}</h4>
-                    <p className="text-[10px] text-zinc-500 mt-0.5">{step.sub}</p>
+                    <h4 className="text-xs sm:text-sm font-black text-white leading-tight uppercase">{step.title}</h4>
+                    <p className="text-xs sm:text-sm text-zinc-300 mt-0.5 font-medium">{step.sub}</p>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
-          {/* 5-Decade Timeline */}
-          <div className="space-y-2 pt-1">
-            <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider block">
+          {/* Historical Evolution Timeline */}
+          <motion.div variants={itemVariants} className="space-y-1.5">
+            <span className="text-xs sm:text-sm font-mono text-zinc-300 uppercase tracking-wider font-bold block">
               Historical Evolution of E-Commerce:
             </span>
             <div className="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
               {[
-                { era: '1960s–70s', tech: 'EDI (Electronic Data Interchange)', desc: 'Standardized enterprise document transfer' },
+                { era: '1960s–70s', tech: 'EDI Networks', desc: 'Standardized enterprise document transfer' },
                 { era: '1990s', tech: 'World Wide Web', desc: 'Netscape SSL, early Amazon & eBay catalogs' },
                 { era: '2000s', tech: 'Search + Social', desc: 'Google AdWords, targeted PPC & PayPal rails' },
                 { era: '2010s', tech: 'Mobile + Cloud', desc: '4G smartphones, Apple Pay & AWS scalability' },
                 { era: '2020s+', tech: 'AI + Omnichannel', desc: 'Agentic shopping, Telebirr & instant delivery' }
               ].map((timeline) => (
-                <div key={timeline.era} className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-                  <span className="text-xs font-mono font-bold text-[#ff5520] block">{timeline.era}</span>
-                  <span className="text-xs font-bold text-white mt-1 block">{timeline.tech}</span>
-                  <p className="text-[11px] text-zinc-400 mt-1 leading-snug">{timeline.desc}</p>
-                </div>
+                <motion.div
+                  key={timeline.era}
+                  variants={itemVariants}
+                  whileHover={{ y: -4, scale: 1.03, borderColor: 'rgba(255, 85, 32, 0.45)' }}
+                  className="p-3 rounded-2xl bg-white/[0.03] border border-white/[0.08] cursor-default transition-colors"
+                >
+                  <span className="text-xs sm:text-sm font-mono font-black text-[#ff5520] block">{timeline.era}</span>
+                  <span className="text-xs sm:text-sm font-black text-white mt-0.5 block">{timeline.tech}</span>
+                  <p className="text-xs sm:text-sm text-zinc-300 mt-1 leading-snug font-medium">{timeline.desc}</p>
+                </motion.div>
               ))}
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
 
       {/* =========================================================================
           SLIDE 02: COMPONENTS — BASED ON FIGURE 1.14
           ========================================================================= */}
       {slideId === 2 && (
-        <div className="max-w-6xl space-y-5">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-3">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full space-y-4 my-auto relative"
+        >
+          {/* Ambient Glow */}
+          <motion.div
+            animate={{ opacity: [0.08, 0.18, 0.08], scale: [1, 1.05, 1] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -top-10 left-1/3 w-80 h-80 bg-purple-500/15 rounded-full blur-3xl pointer-events-none -z-10"
+          />
+
+          <motion.div
+            variants={headerVariants}
+            className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-2.5"
+          >
             <div>
-              <div className="text-xs font-mono text-[#ff5520] tracking-widest uppercase">
+              <div className="text-xs sm:text-sm font-mono text-[#ff5520] font-black tracking-widest uppercase">
                 SLIDE 02 — COMPONENTS (FIGURE 1.14)
               </div>
-              <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight">
                 The Ecosystem of E-Commerce
               </h2>
             </div>
-            <span className="px-3 py-1 rounded-full text-xs font-mono text-[#ff5520] bg-[#ff5520]/10 border border-[#ff5520]/30 font-bold">
+            <span className="px-4 py-1.5 rounded-full text-xs sm:text-sm font-mono text-[#ff5520] bg-[#ff5520]/15 border border-[#ff5520]/40 font-black">
               Grade 11 IT · Figure 1.14
             </span>
-          </div>
+          </motion.div>
 
           {/* Visual Interactive Diagram: 4 Essential Components from Textbook */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               {
                 id: 0,
@@ -307,7 +375,7 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
                 icon: Store,
                 color: "text-[#ff5520]",
                 tag: "SMEs & Large Businesses",
-                desc: "The seller offering tangible goods, digital products, or services. Textbook emphasis: small and medium enterprises (SMEs) can bypass costly physical store rent and sell directly to customers nationwide via the internet.",
+                desc: "The seller offering tangible goods, digital products, or services. Textbook emphasis: small and medium enterprises (SMEs) can bypass costly physical store rent and reach customers nationwide via the internet.",
                 keyAspect: "Direct internet reach without physical shop leases"
               },
               {
@@ -344,64 +412,88 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
               const isSelected = selectedComponent === comp.id;
               const Icon = comp.icon;
               return (
-                <div
+                <motion.div
                   key={comp.title}
+                  variants={itemVariants}
+                  whileHover={{ y: -6, scale: 1.025 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => {
                     audioManager.playTick();
                     setSelectedComponent(comp.id);
                   }}
-                  className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+                  className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
-                      ? 'bg-white/[0.08] border-[#ff5520] ring-1 ring-[#ff5520]/40 shadow-xl'
-                      : 'bg-white/[0.02] border-white/[0.06] hover:border-white/20 hover:bg-white/[0.04]'
+                      ? 'bg-white/[0.08] border-[#ff5520] ring-2 ring-[#ff5520]/50 shadow-xl'
+                      : 'bg-white/[0.03] border-white/[0.08] hover:border-white/20 hover:bg-white/[0.05]'
                   }`}
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center">
+                    <div className="flex items-center justify-between mb-2.5">
+                      <motion.div
+                        whileHover={{ rotate: 12, scale: 1.15 }}
+                        className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/10 flex items-center justify-center"
+                      >
                         <Icon className={`w-5 h-5 ${comp.color}`} />
-                      </div>
-                      <span className="text-[10px] font-mono font-bold text-zinc-400 bg-white/5 px-2 py-0.5 rounded">
+                      </motion.div>
+                      <span className="text-xs font-mono font-bold text-white bg-white/10 px-2.5 py-0.5 rounded">
                         Fig 1.14
                       </span>
                     </div>
-                    <span className="text-xs font-mono text-[#ff5520] uppercase font-bold">{comp.tag}</span>
-                    <h3 className="text-lg font-bold text-white mt-0.5">{comp.title}</h3>
-                    <p className="text-xs text-zinc-400 mt-0.5">{comp.sub}</p>
-                    <p className="text-xs text-zinc-300 mt-3 leading-relaxed">{comp.desc}</p>
+                    <span className="text-xs sm:text-sm font-mono text-[#ff5520] uppercase font-bold">{comp.tag}</span>
+                    <h3 className="text-xl sm:text-2xl font-black text-white mt-0.5">{comp.title}</h3>
+                    <p className="text-xs sm:text-sm font-semibold text-zinc-300 mt-0.5">{comp.sub}</p>
+                    <p className="text-xs sm:text-sm text-zinc-200 mt-2.5 leading-relaxed font-medium">{comp.desc}</p>
                   </div>
-                  <div className="mt-4 pt-3 border-t border-white/[0.05] text-[11px] font-mono text-zinc-400">
+                  <div className="mt-3.5 pt-2.5 border-t border-white/[0.08] text-xs sm:text-sm font-mono text-zinc-300">
                     <strong className="text-white">Role:</strong> {comp.keyAspect}
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
 
           {/* Textbook Highlight Box */}
-          <div className="p-4 rounded-2xl bg-[#ff5520]/5 border border-[#ff5520]/20 flex items-center gap-3">
+          <motion.div
+            variants={itemVariants}
+            whileHover={{ scale: 1.01 }}
+            className="p-3.5 sm:p-4 rounded-2xl bg-[#ff5520]/10 border border-[#ff5520]/30 flex items-center gap-3 transition-all"
+          >
             <Sparkles className="w-5 h-5 text-[#ff5520] shrink-0" />
-            <p className="text-xs sm:text-sm text-zinc-300">
-              <strong className="text-white font-semibold">Grade 11 IT Textbook Focus:</strong> The Ecommerce Website acts as the digital infrastructure linking the <strong>Merchant</strong>, the <strong>Buyer</strong>, and the <strong>Transporter</strong> into a seamless, coordinated transaction loop.
+            <p className="text-xs sm:text-sm md:text-base text-zinc-200 leading-relaxed font-medium">
+              <strong className="text-white font-bold">Grade 11 IT Textbook Focus:</strong> The Ecommerce Website acts as the digital infrastructure linking the <strong className="text-white">Merchant</strong>, the <strong className="text-white">Buyer</strong>, and the <strong className="text-white">Transporter</strong> into a seamless, coordinated transaction loop.
             </p>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
 
       {/* =========================================================================
           SLIDE 03: TYPES — THE FOUR PILLARS
           ========================================================================= */}
       {slideId === 3 && (
-        <div className="max-w-6xl space-y-6">
-          <div>
-            <div className="text-xs font-mono text-[#ff5520] tracking-widest uppercase mb-1">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full space-y-4 my-auto relative"
+        >
+          {/* Ambient Glow */}
+          <motion.div
+            animate={{ opacity: [0.08, 0.16, 0.08], scale: [1, 1.05, 1] }}
+            transition={{ duration: 6.5, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -top-10 -left-10 w-80 h-80 bg-sky-500/15 rounded-full blur-3xl pointer-events-none -z-10"
+          />
+
+          <motion.div variants={headerVariants}>
+            <div className="text-xs sm:text-sm font-mono text-[#ff5520] font-black tracking-widest uppercase mb-1">
               SLIDE 03 — TYPES
             </div>
-            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight">
               The Four Pillars
             </h2>
-            <p className="text-sm text-zinc-400 mt-1">Core transaction models that define commercial interaction.</p>
-          </div>
+            <p className="text-sm sm:text-base text-zinc-300 mt-1 font-medium">
+              Core transaction models that define commercial interaction.
+            </p>
+          </motion.div>
 
           {/* 4 Pillars Interactive Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -441,113 +533,141 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
             ].map((pillar) => {
               const isSelected = selectedPillarType === pillar.id;
               return (
-                <div
+                <motion.div
                   key={pillar.code}
+                  variants={itemVariants}
+                  whileHover={{ y: -6, scale: 1.025 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => {
                     audioManager.playTick();
                     setSelectedPillarType(pillar.id);
                   }}
-                  className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+                  className={`p-4 sm:p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
-                      ? 'bg-white/[0.08] border-[#ff5520] ring-1 ring-[#ff5520]/40'
-                      : 'bg-white/[0.02] border-white/[0.06] hover:border-white/20 hover:bg-white/[0.04]'
+                      ? 'bg-white/[0.08] border-[#ff5520] ring-2 ring-[#ff5520]/50 shadow-xl'
+                      : 'bg-white/[0.03] border-white/[0.08] hover:border-white/20 hover:bg-white/[0.05]'
                   }`}
                 >
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-2xl font-black font-mono text-white">{pillar.code}</span>
-                      <span className="text-xs font-mono text-[#ff5520]">{pillar.flow}</span>
+                      <span className="text-3xl sm:text-4xl font-black font-mono text-white">{pillar.code}</span>
+                      <span className="text-xs sm:text-sm font-mono font-bold text-[#ff5520]">{pillar.flow}</span>
                     </div>
-                    <p className="text-xs text-zinc-300 mb-3">{pillar.def}</p>
-                    <div className="space-y-1.5 text-[11px] text-zinc-400">
-                      <div><strong className="text-zinc-300">Traits:</strong> {pillar.char}</div>
+                    <p className="text-xs sm:text-sm text-zinc-200 mb-2.5 font-medium">{pillar.def}</p>
+                    <div className="text-xs sm:text-sm text-zinc-300 leading-snug">
+                      <strong className="text-zinc-100">Traits:</strong> {pillar.char}
                     </div>
                   </div>
-                  <div className="mt-4 pt-3 border-t border-white/[0.06] text-[11px] text-zinc-400">
+                  <div className="mt-3.5 pt-2.5 border-t border-white/[0.08] text-xs sm:text-sm text-zinc-300">
                     <strong className="text-[#ff5520]">Example:</strong> {pillar.example}
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
 
           {/* Emerging Models Row: D2C & B2B2C */}
-          <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <motion.div
+            variants={itemVariants}
+            whileHover={{ scale: 1.01 }}
+            className="p-3.5 sm:p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-3 transition-all"
+          >
             <div className="flex items-center gap-3">
-              <span className="px-2.5 py-1 rounded bg-[#ff5520]/15 text-[#ff5520] font-mono text-xs font-bold">
+              <span className="px-3 py-1 rounded bg-[#ff5520]/20 text-[#ff5520] font-mono text-xs sm:text-sm font-black">
                 EMERGING
               </span>
               <div>
-                <span className="text-xs font-bold text-white block">D2C (Direct-to-Consumer)</span>
-                <span className="text-[11px] text-zinc-400">Manufacturers bypass wholesalers to sell directly through their own branded web channels.</span>
+                <span className="text-xs sm:text-sm font-black text-white block">D2C (Direct-to-Consumer)</span>
+                <span className="text-xs sm:text-sm text-zinc-300 font-medium">Manufacturers bypass wholesalers to sell directly through their own branded web channels.</span>
               </div>
             </div>
-            <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-white/[0.06] pt-2 sm:pt-0 sm:pl-4">
-              <span className="px-2.5 py-1 rounded bg-amber-500/15 text-amber-300 font-mono text-xs font-bold">
+            <div className="flex items-center gap-3 border-t sm:border-t-0 sm:border-l border-white/[0.08] pt-2 sm:pt-0 sm:pl-4">
+              <span className="px-3 py-1 rounded bg-amber-500/20 text-amber-300 font-mono text-xs sm:text-sm font-black">
                 HYBRID
               </span>
               <div>
-                <span className="text-xs font-bold text-white block">B2B2C (Business-to-Business-to-Consumer)</span>
-                <span className="text-[11px] text-zinc-400">Company A partners with Company B to offer combined digital products directly to the consumer.</span>
+                <span className="text-xs sm:text-sm font-black text-white block">B2B2C (Business-to-Business-to-Consumer)</span>
+                <span className="text-xs sm:text-sm text-zinc-300 font-medium">Company A partners with Company B to offer combined digital products directly to the consumer.</span>
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
 
       {/* =========================================================================
           SLIDE 04: HOW IT WORKS — FROM ONE CLICK TO DELIVERY
           ========================================================================= */}
       {slideId === 4 && (
-        <div className="w-full max-w-6xl space-y-4">
-          {/* Sticky Header to prevent title being pushed off-screen */}
-          <div className="sticky top-0 z-20 bg-[#0c0c0e]/95 backdrop-blur-md pt-1 pb-2.5 border-b border-white/[0.08]">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full space-y-3 my-auto relative"
+        >
+          {/* Ambient Glow */}
+          <motion.div
+            animate={{ opacity: [0.08, 0.16, 0.08], scale: [1, 1.06, 1] }}
+            transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -top-10 -right-10 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none -z-10"
+          />
+
+          {/* Slide Header */}
+          <motion.div variants={headerVariants} className="border-b border-white/[0.08] pb-2">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs font-mono text-[#ff5520] tracking-widest uppercase mb-0.5 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#ff5520]" />
+                <div className="text-xs sm:text-sm font-mono text-[#ff5520] font-black tracking-widest uppercase mb-0.5 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#ff5520] animate-pulse" />
                   <span>SLIDE 04 — HOW IT WORKS</span>
                 </div>
-                <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+                <h2 className="text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
                   From One Click to Delivery
                 </h2>
               </div>
-              <span className="hidden sm:inline-block text-[11px] font-mono text-zinc-400 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10">
+              <span className="hidden sm:inline-block text-xs sm:text-sm font-mono font-bold text-zinc-200 px-3.5 py-1 rounded-full bg-white/[0.05] border border-white/15">
                 8-Step Lifecycle & The 3 Core Flows
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
+            <p className="text-xs sm:text-sm md:text-base text-zinc-300 mt-0.5 font-medium">
               How a digital order journeys from intent and payment rails to physical logistics and doorstep handover.
             </p>
-          </div>
+          </motion.div>
 
           {/* 3 Operational Phases Summary */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            <div className="px-3.5 py-2 rounded-xl bg-sky-500/[0.05] border border-sky-500/20 flex items-center gap-2.5">
-              <span className="w-2 h-2 rounded-full bg-sky-400 shrink-0" />
+          <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="px-3.5 py-2 rounded-xl bg-sky-500/[0.08] border border-sky-500/30 flex items-center gap-2.5 transition-all"
+            >
+              <span className="w-2.5 h-2.5 rounded-full bg-sky-400 shrink-0 animate-ping" />
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-sky-400 font-bold block">Phase 1 · Front-End (Steps 01-03)</span>
-                <span className="text-xs text-zinc-300 font-medium">Discovery, Product Cart & Address Sizing</span>
+                <span className="text-xs font-mono uppercase tracking-wider text-sky-300 font-black block">Phase 1 · Front-End (Steps 01-03)</span>
+                <span className="text-xs sm:text-sm text-zinc-100 font-bold">Discovery, Product Cart & Address Sizing</span>
               </div>
-            </div>
-            <div className="px-3.5 py-2 rounded-xl bg-[#ff5520]/[0.08] border border-[#ff5520]/25 flex items-center gap-2.5">
-              <span className="w-2 h-2 rounded-full bg-[#ff5520] shrink-0" />
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="px-3.5 py-2 rounded-xl bg-[#ff5520]/[0.12] border border-[#ff5520]/35 flex items-center gap-2.5 transition-all"
+            >
+              <span className="w-2.5 h-2.5 rounded-full bg-[#ff5520] shrink-0 animate-ping" />
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-[#ff5520] font-bold block">Phase 2 · Settlement (Step 04)</span>
-                <span className="text-xs text-zinc-300 font-medium">Payment Rail & Fraud Authentication</span>
+                <span className="text-xs font-mono uppercase tracking-wider text-[#ff5520] font-black block">Phase 2 · Settlement (Step 04)</span>
+                <span className="text-xs sm:text-sm text-zinc-100 font-bold">Payment Rail & Fraud Authentication</span>
               </div>
-            </div>
-            <div className="px-3.5 py-2 rounded-xl bg-emerald-500/[0.05] border border-emerald-500/20 flex items-center gap-2.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
+            </motion.div>
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              className="px-3.5 py-2 rounded-xl bg-emerald-500/[0.08] border border-emerald-500/30 flex items-center gap-2.5 transition-all"
+            >
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shrink-0 animate-ping" />
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold block">Phase 3 · Physical Ops (Steps 05-08)</span>
-                <span className="text-xs text-zinc-300 font-medium">Warehouse WMS, Courier & Delivery</span>
+                <span className="text-xs font-mono uppercase tracking-wider text-emerald-300 font-black block">Phase 3 · Physical Ops (Steps 05-08)</span>
+                <span className="text-xs sm:text-sm text-zinc-100 font-bold">Warehouse WMS, Courier & Delivery</span>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* 8-Step Interactive Process Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-1.5 sm:gap-2">
             {[
               { id: 0, num: "01", name: "DISCOVERY", sub: "Frontend Search" },
               { id: 1, num: "02", name: "SELECTION", sub: "Cart & SKU" },
@@ -560,128 +680,52 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
             ].map((step) => {
               const isSelected = activeLifecycleStep === step.id;
               return (
-                <button
+                <motion.button
                   key={step.id}
+                  variants={itemVariants}
+                  whileHover={{ y: -3, scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
                   onClick={() => {
                     audioManager.playTick();
                     setActiveLifecycleStep(step.id);
                   }}
-                  className={`p-3 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                  className={`p-2.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                     isSelected
-                      ? 'bg-[#ff5520]/15 border-[#ff5520] text-white ring-1 ring-[#ff5520]/40 shadow-lg shadow-[#ff5520]/10'
-                      : 'bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.05]'
+                      ? 'bg-[#ff5520]/20 border-[#ff5520] text-white ring-2 ring-[#ff5520]/50 shadow-lg shadow-[#ff5520]/20'
+                      : 'bg-white/[0.03] border-white/[0.08] text-zinc-300 hover:text-white hover:bg-white/[0.06]'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-xs font-mono font-bold text-[#ff5520]">{step.num}</span>
-                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-[#ff5520]" />}
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className="text-xs sm:text-sm font-mono font-black text-[#ff5520]">{step.num}</span>
+                    {isSelected && <span className="w-2 h-2 rounded-full bg-[#ff5520]" />}
                   </div>
                   <div>
-                    <span className="text-xs font-bold block truncate text-white">{step.name}</span>
-                    <span className="text-[10px] text-zinc-500 block truncate">{step.sub}</span>
+                    <span className="text-xs sm:text-sm font-black block truncate text-white">{step.name}</span>
+                    <span className="text-[11px] sm:text-xs text-zinc-400 block truncate font-medium">{step.sub}</span>
                   </div>
-                </button>
+                </motion.button>
               );
             })}
           </div>
 
           {/* Detailed Active Step Explanation Card with Enriched Technical Breakdown */}
-          <div className="p-5 sm:p-6 rounded-3xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md">
-            {[
-              {
-                stepNum: "01",
-                title: "Discovery & Intent Ingestion",
-                phase: "Phase 1: Front-End Experience",
-                area: "Front-End Experience Layer",
-                desc: "Customer opens storefront via mobile app, search engine or social ad. High-speed edge CDN loads localized assets in under 150ms.",
-                metric: "Sub-150ms LCP",
-                tech: "Edge CDN · Algolia Search Index · PWA App",
-                actor: "Buyer & Storefront Engine",
-                goal: "Instant catalog discovery with zero visual latency"
-              },
-              {
-                stepNum: "02",
-                title: "Product Selection & Sizing",
-                phase: "Phase 1: Front-End Experience",
-                area: "Inventory Reservation Engine",
-                desc: "Shopper selects variant, size, and quantity. Cart service places temporary holding hold on inventory database preventing overselling.",
-                metric: "Real-time stock check",
-                tech: "Redis In-Memory Session · Dynamic SKU Matrix",
-                actor: "Cart Microservice & Database",
-                goal: "Lock inventory without double-booking items"
-              },
-              {
-                stepNum: "03",
-                title: "Checkout & Address Verification",
-                phase: "Phase 1: Front-End Experience",
-                area: "Order Orchestrator",
-                desc: "Customer inputs shipping destination. Dynamic address validation checks postal coverage while automated tax engine computes accurate localized duties.",
-                metric: "Address auto-complete",
-                tech: "GeoIP Services · Postal Validation · Rate Calculator",
-                actor: "Order Orchestrator & Address API",
-                goal: "Zero address entry error & exact delivery rate quotes"
-              },
-              {
-                stepNum: "04",
-                title: "Payment Processing & Risk Gate",
-                phase: "Phase 2: Settlement Rail",
-                area: "Fintech Settlement Rail",
-                desc: "3D-Secure 2.3 biometric challenge or Telebirr prompt authorized. Encrypted token generated; funds provisionally captured with zero raw card storage.",
-                metric: "380ms auth latency",
-                tech: "Telebirr API / CBE Birr · 3D-Secure · Tokenization Rail",
-                actor: "Payment Gateway, Bank & Merchant",
-                goal: "Frictionless authentication & fraud-free funds capture"
-              },
-              {
-                stepNum: "05",
-                title: "Order Fulfillment & Warehouse",
-                phase: "Phase 3: Physical Operations",
-                area: "Warehouse Management System (WMS)",
-                desc: "Order routed to nearest distribution center. Automated pick lists generated; robotic AGVs or warehouse pickers retrieve and pack items.",
-                metric: "Sub-15m pick-to-pack",
-                tech: "Automated WMS · Barcode Scanners · Sealed Packaging",
-                actor: "Merchant Warehouse Team & Pickers",
-                goal: "Fast pick-and-pack with 99.9% item accuracy"
-              },
-              {
-                stepNum: "06",
-                title: "Logistics & Sorting Hub",
-                phase: "Phase 3: Physical Operations",
-                area: "Carrier Route Optimizer",
-                desc: "Package weighed, barcoded, and routed through regional hub conveyors. Real-time rate shopping assigns parcel to the fastest reliable carrier.",
-                metric: "Barcoded tracking ID",
-                tech: "Dynamic Carrier Routing · Conveyor Sortation Hub",
-                actor: "Logistics Hub & Transporter Coordinator",
-                goal: "Optimal route selection & live tracking activation"
-              },
-              {
-                stepNum: "07",
-                title: "Transporter Delivery",
-                phase: "Phase 3: Physical Operations",
-                area: "Courier Dispatch & Handover",
-                desc: "Motorized van, bike, or locker network executes doorstep delivery. Customer receives SMS ETA alert and provides digital signature or one-time delivery PIN.",
-                metric: "Doorstep confirmation",
-                tech: "Driver Mobile App · GPS Live Tracking · SMS OTP PIN",
-                actor: "Transporter Courier & Customer",
-                goal: "Safe handover directly to recipient with proof-of-delivery"
-              },
-              {
-                stepNum: "08",
-                title: "Retention & Post-Purchase Loop",
-                phase: "Phase 3: Physical Operations",
-                area: "Customer Care & Feedback",
-                desc: "Automated receipt emailed, customer feedback requested, and loyalty points issued. Reverse return logistics available if customer requires exchange.",
-                metric: "NPS & loyalty loop",
-                tech: "CRM Webhooks · SMS Survey · Reverse Logistics API",
-                actor: "Customer Care & Retention Engine",
-                goal: "Drive customer trust, reviews, and repeat orders"
-              }
-            ][activeLifecycleStep] && (
-              <div className="space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <motion.div
+            variants={itemVariants}
+            className="p-4 sm:p-5 rounded-3xl bg-white/[0.04] border border-white/[0.1] backdrop-blur-md"
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeLifecycleStep}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                transition={{ duration: 0.22 }}
+                className="space-y-3"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="space-y-1 max-w-2xl">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-mono text-[#ff5520] uppercase font-bold">
+                      <span className="text-xs sm:text-sm font-mono text-[#ff5520] uppercase font-black">
                         Step {[ "01", "02", "03", "04", "05", "06", "07", "08" ][activeLifecycleStep]} · {[
                           "Discovery & Intent Ingestion",
                           "Product Selection & Sizing",
@@ -694,7 +738,7 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
                         ][activeLifecycleStep]}
                       </span>
                     </div>
-                    <h3 className="text-xl sm:text-2xl font-bold text-white">
+                    <h3 className="text-xl sm:text-3xl font-black text-white">
                       {[
                         "Front-End Experience Layer",
                         "Inventory Reservation Engine",
@@ -706,7 +750,7 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
                         "Customer Care & Feedback"
                       ][activeLifecycleStep]}
                     </h3>
-                    <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed pt-1">
+                    <p className="text-sm sm:text-base md:text-lg text-zinc-100 leading-relaxed pt-0.5 font-medium">
                       {[
                         "Customer opens storefront via mobile app, search engine or social ad. High-speed edge CDN loads localized assets in under 150ms.",
                         "Shopper selects variant, size, and quantity. Cart service places temporary holding hold on inventory database preventing overselling.",
@@ -719,9 +763,9 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
                       ][activeLifecycleStep]}
                     </p>
                   </div>
-                  <div className="px-4 py-3 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-left sm:text-right shrink-0">
-                    <span className="text-[10px] font-mono text-zinc-500 block">SLA BENCHMARK</span>
-                    <span className="text-sm font-mono font-bold text-emerald-400 block">
+                  <div className="px-4 py-2.5 rounded-2xl bg-white/[0.05] border border-white/[0.1] text-left sm:text-right shrink-0">
+                    <span className="text-xs font-mono text-zinc-400 block uppercase font-bold">SLA BENCHMARK</span>
+                    <span className="text-base sm:text-lg font-mono font-black text-emerald-400 block">
                       {[
                         "Sub-150ms LCP",
                         "Real-time stock check",
@@ -733,17 +777,17 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
                         "NPS & loyalty loop"
                       ][activeLifecycleStep]}
                     </span>
-                    <span className="text-[10px] font-mono text-zinc-400 mt-1 block">
+                    <span className="text-xs font-mono text-zinc-300 mt-0.5 block font-medium">
                       Target Performance
                     </span>
                   </div>
                 </div>
 
                 {/* Subsystem & Objective Breakdown */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-3 border-t border-white/[0.06]">
-                  <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-                    <span className="text-[10px] font-mono text-zinc-500 uppercase block">Under The Hood Tech</span>
-                    <span className="text-xs font-mono text-[#ff5520] font-semibold mt-0.5 block truncate">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2.5 border-t border-white/[0.08]">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08]">
+                    <span className="text-xs font-mono text-zinc-400 uppercase block font-bold">Under The Hood Tech</span>
+                    <span className="text-xs sm:text-sm font-mono text-[#ff5520] font-black mt-0.5 block truncate">
                       {[
                         "Edge CDN · Algolia · PWA",
                         "Redis Session · SKU Locking",
@@ -756,9 +800,9 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
                       ][activeLifecycleStep]}
                     </span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-                    <span className="text-[10px] font-mono text-zinc-500 uppercase block">Primary Actor</span>
-                    <span className="text-xs text-zinc-200 font-medium mt-0.5 block truncate">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08]">
+                    <span className="text-xs font-mono text-zinc-400 uppercase block font-bold">Primary Actor</span>
+                    <span className="text-xs sm:text-sm text-zinc-100 font-bold mt-0.5 block truncate">
                       {[
                         "Buyer & Storefront Engine",
                         "Cart Microservice & DB",
@@ -771,9 +815,9 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
                       ][activeLifecycleStep]}
                     </span>
                   </div>
-                  <div className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.05]">
-                    <span className="text-[10px] font-mono text-zinc-500 uppercase block">Step Objective</span>
-                    <span className="text-xs text-zinc-300 font-medium mt-0.5 block truncate">
+                  <div className="p-2 sm:p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.08]">
+                    <span className="text-xs font-mono text-zinc-400 uppercase block font-bold">Step Objective</span>
+                    <span className="text-xs sm:text-sm text-zinc-200 font-semibold mt-0.5 block truncate">
                       {[
                         "Zero latency catalog discovery",
                         "Guaranteed inventory reservation",
@@ -787,121 +831,71 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
                     </span>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
 
-          {/* NEW EDUCATIONAL SECTION: The Three Fundamental Flows of E-Commerce */}
-          <div className="space-y-2 pt-1">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono text-[#ff5520] uppercase font-bold tracking-wider flex items-center gap-1.5">
-                <Layers className="w-3.5 h-3.5" />
-                The Three Concurrent Flows in Every E-Commerce Transaction
-              </span>
-              <span className="text-[10px] font-mono text-zinc-400">Information · Financial · Physical</span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {/* Flow 1: Information Flow */}
-              <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-white/15 transition-all">
-                <div className="flex items-center gap-2.5 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-                    <Globe className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wider">1. Information Flow</h4>
-                    <span className="text-[10px] font-mono text-sky-400">Digital Data & Telemetry</span>
-                  </div>
-                </div>
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  Product descriptions, real-time inventory counts, customer delivery addresses, order numbers, and live GPS transit alerts exchanged between buyer, seller, and transporter.
-                </p>
-                <div className="mt-2.5 pt-2 border-t border-white/[0.04] text-[11px] font-mono text-zinc-400">
-                  <strong className="text-white">Medium:</strong> Internet, APIs & Mobile Apps
-                </div>
-              </div>
-
-              {/* Flow 2: Financial Flow */}
-              <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-white/15 transition-all">
-                <div className="flex items-center gap-2.5 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-[#ff5520]/10 border border-[#ff5520]/20 flex items-center justify-center text-[#ff5520]">
-                    <DollarSign className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wider">2. Financial Flow</h4>
-                    <span className="text-[10px] font-mono text-[#ff5520]">Electronic Money & Value</span>
-                  </div>
-                </div>
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  Payment authorization, fund transfer via digital wallets (Telebirr/CBE Birr/debit cards), automated taxation, escrow holds, and merchant payout settlements.
-                </p>
-                <div className="mt-2.5 pt-2 border-t border-white/[0.04] text-[11px] font-mono text-zinc-400">
-                  <strong className="text-white">Medium:</strong> Mobile Banking Rails & Gateways
-                </div>
-              </div>
-
-              {/* Flow 3: Physical / Goods Flow */}
-              <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] hover:border-white/15 transition-all">
-                <div className="flex items-center gap-2.5 mb-2">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                    <Truck className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wider">3. Physical Flow</h4>
-                    <span className="text-[10px] font-mono text-emerald-400">Real-World Logistics</span>
-                  </div>
-                </div>
-                <p className="text-xs text-zinc-300 leading-relaxed">
-                  Tangible products packed in warehouses, sorted at regional distribution centers, and transported by motorcycle or vehicle couriers directly to the buyer’s hands.
-                </p>
-                <div className="mt-2.5 pt-2 border-t border-white/[0.04] text-[11px] font-mono text-zinc-400">
-                  <strong className="text-white">Medium:</strong> Couriers, Vans & Motorbikes
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Curriculum Principle Callout */}
-          <div className="p-3.5 sm:p-4 rounded-2xl bg-white/[0.02] border border-white/[0.06] flex items-start gap-3">
-            <Sparkles className="w-5 h-5 text-[#ff5520] shrink-0 mt-0.5" />
-            <div className="space-y-0.5">
-              <span className="text-xs font-mono font-bold text-white uppercase">
-                Grade 11 IT Core Curriculum Principle:
-              </span>
-              <p className="text-xs text-zinc-300 leading-relaxed">
-                In traditional retail, the buyer must travel to the merchant's physical location. In e-commerce, <strong>information and payments travel electronically in milliseconds</strong>, leaving only the <strong>transporter</strong> to physically bridge geographical distance to the customer's doorstep.
-              </p>
-            </div>
-          </div>
-        </div>
+          {/* THE THREE CONCURRENT FLOWS BANNER */}
+          <motion.div
+            variants={itemVariants}
+            whileHover={{ scale: 1.01 }}
+            className="px-4 py-2.5 rounded-2xl bg-white/[0.04] border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-2 shrink-0 transition-all"
+          >
+            <span className="text-xs sm:text-sm md:text-base font-mono text-[#ff5520] uppercase font-black tracking-wider flex items-center gap-2">
+              <Layers className="w-4 h-4 text-[#ff5520]" />
+              The Three Concurrent Flows in Every E-Commerce Transaction
+            </span>
+            <span className="text-xs sm:text-sm md:text-base font-mono font-bold text-zinc-200">
+              <span className="text-sky-300 font-black">1. Information Flow</span> · <span className="text-[#ff5520] font-black">2. Financial Flow</span> · <span className="text-emerald-300 font-black">3. Physical Flow</span>
+            </span>
+          </motion.div>
+        </motion.div>
       )}
 
       {/* =========================================================================
           SLIDE 05: ADVANTAGES — BASED ON TEXTBOOK LIST
           ========================================================================= */}
       {slideId === 5 && (
-        <div className="max-w-6xl space-y-6">
-          <div>
-            <div className="text-xs font-mono text-[#ff5520] tracking-widest uppercase mb-1">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full space-y-4 my-auto relative"
+        >
+          {/* Ambient Glow */}
+          <motion.div
+            animate={{ opacity: [0.08, 0.18, 0.08], scale: [1, 1.05, 1] }}
+            transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -top-10 right-1/4 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none -z-10"
+          />
+
+          <motion.div variants={headerVariants}>
+            <div className="text-xs sm:text-sm font-mono text-[#ff5520] font-black tracking-widest uppercase mb-1">
               SLIDE 05 — ADVANTAGES
             </div>
-            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight">
               Why E-Commerce Matters
             </h2>
-            <p className="text-sm text-zinc-400 mt-1">Three-column textbook categorization: Customer, Business, and Macro Economy.</p>
-          </div>
+            <p className="text-sm sm:text-base text-zinc-300 mt-1 font-medium">
+              Three-column textbook categorization: Customer, Business, and Macro Economy.
+            </p>
+          </motion.div>
 
           {/* 3 Columns: CUSTOMER, BUSINESS, ECONOMY from textbook */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
             {/* Column 1: CUSTOMER */}
-            <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/[0.08] flex flex-col justify-between">
+            <motion.div
+              variants={itemVariants}
+              whileHover={{ y: -6, scale: 1.02 }}
+              className="p-5 sm:p-6 rounded-3xl bg-white/[0.03] border border-white/[0.08] hover:border-[#ff5520]/40 flex flex-col justify-between transition-colors shadow-lg"
+            >
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-mono text-[#ff5520] font-bold uppercase">CUSTOMER</span>
-                  <span className="text-xs font-mono text-zinc-500">Buyer Perks</span>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs sm:text-sm font-mono text-[#ff5520] font-black uppercase">CUSTOMER</span>
+                  <span className="text-xs sm:text-sm font-mono text-zinc-400 font-bold">Buyer Perks</span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-4">For Customers</h3>
-                <ul className="space-y-3 text-xs text-zinc-300">
+                <h3 className="text-xl sm:text-2xl font-black text-white mb-3">For Customers</h3>
+                <ul className="space-y-2.5 text-xs sm:text-sm md:text-base text-zinc-200 font-medium">
                   {[
                     "Convenience: 24/7 shopping without traveling to physical markets",
                     "Global selection: Access to products from across regional borders",
@@ -909,27 +903,36 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
                     "Customer reviews: Read peer experiences and ratings before buying",
                     "Personalization: Tailored suggestions matching individual taste"
                   ].map((adv) => (
-                    <li key={adv} className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-[#ff5520] shrink-0 mt-0.5" />
+                    <motion.li
+                      key={adv}
+                      whileHover={{ x: 4 }}
+                      transition={{ duration: 0.15 }}
+                      className="flex items-start gap-2 cursor-default"
+                    >
+                      <CheckCircle2 className="w-4 h-4 text-[#ff5520] shrink-0 mt-1" />
                       <span>{adv}</span>
-                    </li>
+                    </motion.li>
                   ))}
                 </ul>
               </div>
-              <div className="mt-6 pt-3 border-t border-white/[0.06] text-[11px] font-mono text-zinc-400">
+              <div className="mt-4 pt-3 border-t border-white/[0.08] text-xs sm:text-sm font-mono text-zinc-300 font-semibold">
                 Textbook focus: Accessibility & ease of discovery
               </div>
-            </div>
+            </motion.div>
 
             {/* Column 2: BUSINESS */}
-            <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/[0.08] flex flex-col justify-between">
+            <motion.div
+              variants={itemVariants}
+              whileHover={{ y: -6, scale: 1.02 }}
+              className="p-5 sm:p-6 rounded-3xl bg-white/[0.03] border border-white/[0.08] hover:border-amber-400/40 flex flex-col justify-between transition-colors shadow-lg"
+            >
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-mono text-amber-400 font-bold uppercase">BUSINESS</span>
-                  <span className="text-xs font-mono text-zinc-500">Merchant Perks</span>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs sm:text-sm font-mono text-amber-400 font-black uppercase">BUSINESS</span>
+                  <span className="text-xs sm:text-sm font-mono text-zinc-400 font-bold">Merchant Perks</span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-4">For Businesses</h3>
-                <ul className="space-y-3 text-xs text-zinc-300">
+                <h3 className="text-xl sm:text-2xl font-black text-white mb-3">For Businesses</h3>
+                <ul className="space-y-2.5 text-xs sm:text-sm md:text-base text-zinc-200 font-medium">
                   {[
                     "Lower operational costs: No need to pay physical store rental leases",
                     "Global reach: Sell goods across regional and national borders",
@@ -937,65 +940,93 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
                     "Scalability: Handle thousands of simultaneous digital shoppers",
                     "Automated marketing: Triggered campaigns and digital retargeting"
                   ].map((adv) => (
-                    <li key={adv} className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                    <motion.li
+                      key={adv}
+                      whileHover={{ x: 4 }}
+                      transition={{ duration: 0.15 }}
+                      className="flex items-start gap-2 cursor-default"
+                    >
+                      <CheckCircle2 className="w-4 h-4 text-amber-400 shrink-0 mt-1" />
                       <span>{adv}</span>
-                    </li>
+                    </motion.li>
                   ))}
                 </ul>
               </div>
-              <div className="mt-6 pt-3 border-t border-white/[0.06] text-[11px] font-mono text-zinc-400">
+              <div className="mt-4 pt-3 border-t border-white/[0.08] text-xs sm:text-sm font-mono text-zinc-300 font-semibold">
                 Textbook focus: Eliminates geographic & overhead barriers
               </div>
-            </div>
+            </motion.div>
 
             {/* Column 3: ECONOMY */}
-            <div className="p-6 rounded-3xl bg-white/[0.02] border border-white/[0.08] flex flex-col justify-between">
+            <motion.div
+              variants={itemVariants}
+              whileHover={{ y: -6, scale: 1.02 }}
+              className="p-5 sm:p-6 rounded-3xl bg-white/[0.03] border border-white/[0.08] hover:border-emerald-400/40 flex flex-col justify-between transition-colors shadow-lg"
+            >
               <div>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-xs font-mono text-emerald-400 font-bold uppercase">ECONOMY</span>
-                  <span className="text-xs font-mono text-zinc-500">Macro Impact</span>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs sm:text-sm font-mono text-emerald-400 font-black uppercase">ECONOMY</span>
+                  <span className="text-xs sm:text-sm font-mono text-zinc-400 font-bold">Macro Impact</span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-4">For the Economy</h3>
-                <ul className="space-y-3 text-xs text-zinc-300">
+                <h3 className="text-xl sm:text-2xl font-black text-white mb-3">For the Economy</h3>
+                <ul className="space-y-2.5 text-xs sm:text-sm md:text-base text-zinc-200 font-medium">
                   {[
                     "Job creation: Transporter couriers, developers & warehouse staff",
                     "SME growth: Local micro-enterprises connect to broader markets",
                     "Financial inclusion: Digital mobile money onboarding for citizens",
                     "Digital transformation: Accelerates national IT infrastructure adoption"
                   ].map((adv) => (
-                    <li key={adv} className="flex items-start gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <motion.li
+                      key={adv}
+                      whileHover={{ x: 4 }}
+                      transition={{ duration: 0.15 }}
+                      className="flex items-start gap-2 cursor-default"
+                    >
+                      <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-1" />
                       <span>{adv}</span>
-                    </li>
+                    </motion.li>
                   ))}
                 </ul>
               </div>
-              <div className="mt-6 pt-3 border-t border-white/[0.06] text-[11px] font-mono text-zinc-400">
+              <div className="mt-4 pt-3 border-t border-white/[0.08] text-xs sm:text-sm font-mono text-zinc-300 font-semibold">
                 Textbook focus: Drives modernization & enterprise growth
               </div>
-            </div>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
       )}
 
       {/* =========================================================================
           SLIDE 06: CHALLENGES — PROBLEMS AND RISKS
           ========================================================================= */}
       {slideId === 6 && (
-        <div className="max-w-6xl space-y-5">
-          <div>
-            <div className="text-xs font-mono text-red-400 tracking-widest uppercase mb-1">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full space-y-4 my-auto relative"
+        >
+          {/* Ambient Glow */}
+          <motion.div
+            animate={{ opacity: [0.08, 0.16, 0.08], scale: [1, 1.05, 1] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -top-10 -left-10 w-80 h-80 bg-red-500/15 rounded-full blur-3xl pointer-events-none -z-10"
+          />
+
+          <motion.div variants={headerVariants}>
+            <div className="text-xs sm:text-sm font-mono text-red-400 font-black tracking-widest uppercase mb-1">
               SLIDE 06 — CHALLENGES
             </div>
-            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+            <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight">
               The Dark Side of Digital Commerce
             </h2>
-            <p className="text-sm text-zinc-400 mt-1">Six core risk areas, plus textbook perspective on developing infrastructure.</p>
-          </div>
+            <p className="text-sm sm:text-base text-zinc-300 mt-1 font-medium">
+              Six core risk areas, plus textbook perspective on developing infrastructure.
+            </p>
+          </motion.div>
 
-          {/* 6 Risk Areas Grid from prompt */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pt-1">
+          {/* 6 Risk Areas Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {[
               {
                 title: "SECURITY",
@@ -1036,154 +1067,199 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
             ].map((risk) => {
               const Icon = risk.icon;
               return (
-                <div
+                <motion.div
                   key={risk.title}
-                  className="p-4 rounded-2xl bg-white/[0.02] border border-white/[0.08] hover:border-white/20 transition-all space-y-2.5"
+                  variants={itemVariants}
+                  whileHover={{ y: -6, scale: 1.025 }}
+                  className="p-3.5 sm:p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-white/20 transition-all space-y-2 shadow-md cursor-default"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-mono font-bold text-zinc-300 uppercase tracking-wider">{risk.title}</span>
-                    <Icon className={`w-4 h-4 ${risk.color}`} />
+                    <span className="text-xs sm:text-sm font-mono font-black text-white uppercase tracking-wider">
+                      {risk.title}
+                    </span>
+                    <motion.div whileHover={{ scale: 1.2, rotate: 10 }}>
+                      <Icon className={`w-5 h-5 ${risk.color}`} />
+                    </motion.div>
                   </div>
-                  <ul className="space-y-1.5 text-xs text-zinc-400">
+                  <ul className="space-y-1.5 text-xs sm:text-sm text-zinc-200 font-medium">
                     {risk.points.map((pt) => (
                       <li key={pt} className="flex items-start gap-2">
-                        <span className="text-zinc-600 mt-0.5">•</span>
+                        <span className="text-[#ff5520] font-bold mt-0.5">•</span>
                         <span>{pt}</span>
                       </li>
                     ))}
                   </ul>
-                </div>
+                </motion.div>
               );
             })}
           </div>
 
           {/* Exact Quote from Grade 11 IT Textbook */}
-          <div className="p-4 rounded-2xl bg-amber-500/[0.06] border border-amber-500/25 flex items-start gap-3">
+          <motion.div
+            variants={itemVariants}
+            whileHover={{ scale: 1.01 }}
+            className="p-3.5 sm:p-4 rounded-2xl bg-amber-500/[0.08] border border-amber-500/30 flex items-start gap-3 transition-all"
+          >
             <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <span className="text-xs font-mono font-bold text-amber-400 uppercase">
+            <div className="space-y-0.5">
+              <span className="text-xs sm:text-sm font-mono font-black text-amber-400 uppercase">
                 Direct Quote from Grade 11 IT Textbook:
               </span>
-              <p className="text-xs sm:text-sm text-zinc-200 italic leading-relaxed">
+              <p className="text-xs sm:text-sm md:text-base text-zinc-100 italic leading-relaxed font-medium">
                 “E-commerce is at its infancy stage in Ethiopia. There is a need to develop the e-commerce infrastructure such as Internet access in all places, efficient transport system, appropriate regulations.”
               </p>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
 
       {/* =========================================================================
-          SLIDE 07: E-COMMERCE IN ETHIOPIA (STICKY TITLE HEADER)
+          SLIDE 07: E-COMMERCE IN ETHIOPIA
           ========================================================================= */}
       {slideId === 7 && (
-        <div className="w-full max-w-6xl">
-          <div className="sticky top-0 z-30 bg-[#0c0c0e]/95 backdrop-blur-md pt-1 pb-2.5 border-b border-white/[0.08] mb-3">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full my-auto relative"
+        >
+          <motion.div variants={headerVariants} className="border-b border-white/[0.08] pb-2 mb-2">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs font-mono text-[#ff5520] tracking-widest uppercase mb-0.5 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#ff5520]" />
+                <div className="text-xs sm:text-sm font-mono text-[#ff5520] font-black tracking-widest uppercase mb-0.5 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#ff5520] animate-pulse" />
                   <span>SLIDE 07 — E-COMMERCE IN ETHIOPIA</span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
+                <h2 className="text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
                   E-Commerce in Ethiopia
                 </h2>
               </div>
-              <span className="hidden sm:inline-block text-[11px] font-mono text-zinc-400 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10">
+              <span className="hidden sm:inline-block text-xs sm:text-sm font-mono font-bold text-zinc-200 px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/15">
                 Grade 11 IT Unit 1.3.4
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
+            <p className="text-xs sm:text-sm md:text-base text-zinc-300 mt-0.5 font-medium">
               Definition, current market situations, Telebirr mobile rails & top local company examples.
             </p>
-          </div>
-          <EthiopiaSectionView />
-        </div>
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <EthiopiaSectionView />
+          </motion.div>
+        </motion.div>
       )}
 
       {/* =========================================================================
-          SLIDE 08: ETHIOPIAN COMPANY PROCESS VIDEO (DELIVER ADDIS - SINGLE COMPANY)
+          SLIDE 08: ETHIOPIAN COMPANY PROCESS VIDEO (DELIVER ADDIS)
           ========================================================================= */}
       {slideId === 8 && (
-        <div className="w-full max-w-6xl">
-          <div className="sticky top-0 z-30 bg-[#0c0c0e]/95 backdrop-blur-md pt-1 pb-2.5 border-b border-white/[0.08] mb-3">
-            <div className="flex items-center justify-between">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full h-full flex flex-col justify-between py-1 my-auto"
+        >
+          <motion.div variants={headerVariants} className="border-b border-white/[0.08] pb-1.5 shrink-0">
+            <div className="flex items-center justify-between gap-3">
               <div>
-                <div className="text-xs font-mono text-[#ff5520] tracking-widest uppercase mb-0.5 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#ff5520]" />
+                <div className="text-[11px] sm:text-xs font-mono text-[#ff5520] font-black tracking-widest uppercase flex items-center gap-1.5 mb-0.5">
+                  <span className="w-2 h-2 rounded-full bg-[#ff5520] animate-pulse" />
                   <span>SLIDE 08 — ETHIOPIAN COMPANY PROCESS VIDEO</span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight leading-tight">
                   Deliver Addis: Order to Delivery Process
                 </h2>
               </div>
-              <span className="text-[11px] font-mono font-bold text-[#ff5520] px-3 py-1 rounded-full bg-[#ff5520]/15 border border-[#ff5520]/30">
+              <span className="text-[11px] sm:text-xs font-mono font-black text-[#ff5520] px-3 py-1 rounded-full bg-[#ff5520]/15 border border-[#ff5520]/40 shrink-0">
                 Deliver Addis (Local Company)
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
-              Watch Ethiopia's pioneer delivery company in action: app order, Telebirr checkout & motorcycle courier dispatch.
+            <p className="text-[11px] sm:text-xs text-zinc-300 font-medium">
+              Watch Ethiopia's pioneer delivery company in action: 4 process milestones from app order to final delivery.
             </p>
-          </div>
-          <VideoJourneyView />
-        </div>
+          </motion.div>
+          <motion.div variants={itemVariants} className="flex-1 flex flex-col justify-between min-h-0 pt-1">
+            <VideoJourneyView />
+          </motion.div>
+        </motion.div>
       )}
 
       {/* =========================================================================
           SLIDE 09: APPLIED DEMO (FIGURE 1.15) — EXPERIENCE AN ONLINE STORE
           ========================================================================= */}
       {slideId === 9 && (
-        <div className="w-full max-w-6xl">
-          <div className="sticky top-0 z-30 bg-[#0c0c0e]/95 backdrop-blur-md pt-1 pb-2.5 border-b border-white/[0.08] mb-3">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full relative"
+        >
+          <motion.div variants={headerVariants} className="sticky top-0 z-30 bg-[#0c0c0e]/95 backdrop-blur-md pt-1 pb-2.5 border-b border-white/[0.08] mb-3">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs font-mono text-[#ff5520] tracking-widest uppercase mb-0.5 flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-[#ff5520]" />
+                <div className="text-xs sm:text-sm font-mono text-[#ff5520] font-black tracking-widest uppercase mb-0.5 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-[#ff5520] animate-pulse" />
                   <span>SLIDE 09 — APPLIED DEMO (FIGURE 1.15)</span>
                 </div>
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight">
+                <h2 className="text-2xl sm:text-4xl md:text-5xl font-black text-white tracking-tight">
                   Experience an Online Store
                 </h2>
               </div>
-              <span className="hidden sm:inline-block text-[11px] font-mono text-zinc-400 px-3 py-1 rounded-full bg-white/[0.04] border border-white/10">
+              <span className="hidden sm:inline-block text-xs sm:text-sm font-mono font-bold text-zinc-200 px-3.5 py-1 rounded-full bg-white/[0.04] border border-white/15">
                 Figure 1.15 Simulation
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-zinc-400 mt-0.5">
+            <p className="text-xs sm:text-sm md:text-base text-zinc-300 mt-0.5 font-medium">
               Interactive store demo based on Figure 1.15 ("Car for Sale in Ethiopia") · Test browsing, item specs & Telebirr checkout.
             </p>
-          </div>
-          <AppliedDemoView />
-        </div>
+          </motion.div>
+          <motion.div variants={itemVariants}>
+            <AppliedDemoView />
+          </motion.div>
+        </motion.div>
       )}
 
       {/* =========================================================================
           SLIDE 10: CONCLUSION — WHAT DID WE LEARN?
           ========================================================================= */}
       {slideId === 10 && (
-        <div className="max-w-6xl space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.06] pb-3">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full space-y-4 my-auto relative"
+        >
+          {/* Ambient Glow */}
+          <motion.div
+            animate={{ opacity: [0.08, 0.18, 0.08], scale: [1, 1.06, 1] }}
+            transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -top-10 -right-10 w-80 h-80 bg-[#ff5520]/20 rounded-full blur-3xl pointer-events-none -z-10"
+          />
+
+          <motion.div variants={headerVariants} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/[0.08] pb-2.5">
             <div>
-              <div className="text-xs font-mono text-[#ff5520] tracking-widest uppercase mb-1">
+              <div className="text-xs sm:text-sm font-mono text-[#ff5520] font-black tracking-widest uppercase mb-1">
                 SLIDE 10 — CONCLUSION
               </div>
-              <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+              <h2 className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight">
                 What Did We Learn?
               </h2>
             </div>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.96 }}
               onClick={() => {
                 audioManager.playSlideChange('next');
                 onNext();
               }}
-              className="px-4 py-2 rounded-xl bg-[#ff5520] hover:bg-[#ff6e3a] text-black font-bold text-xs uppercase tracking-wider flex items-center gap-1.5 cursor-pointer shadow-md shadow-[#ff5520]/20"
+              className="px-5 py-2.5 rounded-xl bg-[#ff5520] hover:bg-[#ff6e3a] text-black font-black text-xs sm:text-sm uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-md shadow-[#ff5520]/20 transition-all"
             >
               <span>View Group Credits</span>
               <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
 
-          {/* 5 Takeaway Cards from prompt */}
-          <div className="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-1">
+          {/* 5 Takeaway Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
             {[
               { num: "01", text: "E-Commerce transforms commerce digitally across every traditional sector." },
               { num: "02", text: "It connects customers, businesses, payments, and logistics in real-time." },
@@ -1191,193 +1267,191 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
               { num: "04", text: "Local infrastructure strongly shapes how e-commerce develops regionally." },
               { num: "05", text: "The future is increasingly connected, mobile, AI-powered, and omnichannel." }
             ].map((card) => (
-              <div
+              <motion.div
                 key={card.num}
-                className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.08] flex flex-col justify-between"
+                variants={itemVariants}
+                whileHover={{ y: -6, scale: 1.04 }}
+                className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-[#ff5520]/40 flex flex-col justify-between transition-colors shadow-md cursor-default"
               >
-                <span className="text-xl font-black font-mono text-[#ff5520]">{card.num}</span>
-                <p className="text-xs sm:text-sm text-zinc-300 leading-relaxed mt-4">{card.text}</p>
-              </div>
+                <span className="text-2xl sm:text-3xl font-black font-mono text-[#ff5520]">{card.num}</span>
+                <p className="text-xs sm:text-sm md:text-base text-zinc-100 font-semibold leading-relaxed mt-3">
+                  {card.text}
+                </p>
+              </motion.div>
             ))}
           </div>
 
           {/* Final Large Statement & QUESTIONS? */}
-          <div className="p-6 sm:p-7 rounded-3xl bg-white/[0.03] border border-white/[0.08] backdrop-blur-md space-y-4 text-center sm:text-left">
-            <p className="text-lg sm:text-2xl font-light text-white leading-relaxed">
+          <motion.div
+            variants={itemVariants}
+            whileHover={{ scale: 1.008 }}
+            className="p-5 sm:p-7 rounded-3xl bg-white/[0.04] border border-white/[0.1] backdrop-blur-md space-y-3.5 text-center sm:text-left transition-all"
+          >
+            <p className="text-lg sm:text-2xl md:text-3xl font-light text-white leading-relaxed">
               “E-Commerce is not simply buying and selling online. <br className="hidden sm:inline" />
-              <strong className="text-[#ff5520] font-semibold">It is the digital infrastructure connecting modern commerce.”</strong>
+              <strong className="text-[#ff5520] font-black">It is the digital infrastructure connecting modern commerce.”</strong>
             </p>
 
-            <div className="pt-3 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
-              <span className="text-2xl sm:text-3xl font-black tracking-widest text-white uppercase font-mono">
+            <div className="pt-3 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="text-2xl sm:text-4xl font-black tracking-widest text-white uppercase font-mono">
                 QUESTIONS?
               </span>
 
               <div className="flex items-center gap-3">
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
                   onClick={() => {
                     audioManager.playAction();
                     onSelectSlide(11);
                   }}
-                  className="px-5 py-2.5 rounded-full bg-white/[0.06] hover:bg-white/[0.1] border border-white/10 text-white font-bold text-xs uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2"
+                  className="px-6 py-3 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 text-white font-black text-xs sm:text-sm uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2"
                 >
                   <Users className="w-4 h-4 text-[#ff5520]" />
                   <span>Meet Group Members</span>
-                </button>
-                <button
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
                   onClick={() => {
                     audioManager.playAction();
                     onSelectSlide(0);
                   }}
-                  className="px-5 py-2.5 rounded-full bg-[#ff5520] hover:bg-[#ff6e3a] text-black font-bold text-xs uppercase tracking-wider transition-all cursor-pointer shadow-lg shadow-[#ff5520]/20"
+                  className="px-6 py-3 rounded-full bg-[#ff5520] hover:bg-[#ff6e3a] text-black font-black text-xs sm:text-sm uppercase tracking-wider transition-all cursor-pointer shadow-lg shadow-[#ff5520]/25"
                 >
                   Restart Deck ↺
-                </button>
+                </motion.button>
               </div>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
 
       {/* =========================================================================
-          SLIDE 11: GROUP MEMBERS / CREDITS
+          SLIDE 11: GROUP MEMBERS (FULL SCREEN PRESENTATION KEYNOTE)
           ========================================================================= */}
       {slideId === 11 && (
-        <div className="max-w-5xl mx-auto w-full space-y-6">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="show"
+          className="w-full h-full flex flex-col justify-between py-2 sm:py-3.5 my-auto relative"
+        >
+          {/* Ambient Glow */}
+          <motion.div
+            animate={{ opacity: [0.12, 0.22, 0.12], scale: [1, 1.08, 1] }}
+            transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute -top-10 left-1/3 w-96 h-96 bg-[#ff5520]/20 rounded-full blur-3xl pointer-events-none -z-10"
+          />
+
           {/* Header */}
-          <div className="text-center space-y-2 border-b border-white/[0.06] pb-4">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#ff5520]/10 border border-[#ff5520]/30 text-[#ff5520] text-xs font-mono font-bold uppercase">
+          <motion.div variants={headerVariants} className="text-center space-y-1 border-b border-white/[0.08] pb-1.5 sm:pb-2 shrink-0">
+            <div className="inline-flex items-center gap-2 px-3.5 py-0.5 rounded-full bg-[#ff5520]/15 border border-[#ff5520]/30 text-[#ff5520] text-xs font-mono font-black uppercase">
               <Users className="w-3.5 h-3.5" />
-              <span>SLIDE 11 — GROUP MEMBERS / CREDITS</span>
+              <span>SLIDE 11 — GROUP MEMBERS</span>
             </div>
-            <h2 className="text-3xl sm:text-5xl font-black text-white tracking-tight">
+            <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
               Group Members
             </h2>
-            <div className="flex items-center justify-center gap-2 text-sm sm:text-base font-mono font-bold text-[#ff5520]">
+            <div className="flex items-center justify-center gap-2 text-xs sm:text-base font-mono font-black text-[#ff5520]">
               <GraduationCap className="w-4 h-4" />
               <span>IFA BORU BITE SPECIAL SECONDARY SCHOOL</span>
             </div>
-            <p className="text-xs text-zinc-400">
-              Information Technology — Grade 11 — Unit 1.3.4 E-Commerce
+            <p className="text-[11px] sm:text-xs text-zinc-300 font-medium">
+              Grade 11 Information Technology · E-Commerce Presentation
             </p>
-          </div>
+          </motion.div>
 
-          {/* 5 Student Cards in Glass Style with Staggered Layout */}
-          <div className="space-y-2.5 max-w-3xl mx-auto">
-            {students.map((student, idx) => {
-              const isEditing = editingStudentId === student.id;
-              return (
-                <motion.div
-                  key={student.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: idx * 0.08 }}
-                  className="p-4 sm:p-4.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-[#ff5520]/40 backdrop-blur-md flex items-center justify-between gap-4 transition-all"
-                >
-                  <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                    {/* Number Badge */}
-                    <div className="w-9 h-9 rounded-xl bg-[#ff5520]/10 border border-[#ff5520]/30 flex items-center justify-center font-mono font-bold text-xs text-[#ff5520] shrink-0">
-                      0{student.id}
-                    </div>
-
-                    {/* Student Name & Editable Role */}
-                    <div className="flex-1 min-w-0">
-                      {isEditing ? (
-                        <div className="space-y-1">
-                          <input
-                            type="text"
-                            value={student.name}
-                            onChange={(e) => handleUpdateStudent(student.id, 'name', e.target.value)}
-                            className="w-full text-sm font-bold text-white bg-black/60 border border-[#ff5520] rounded px-2 py-0.5 focus:outline-none"
-                            placeholder="Student Name"
-                          />
-                          <input
-                            type="text"
-                            value={student.role || ''}
-                            onChange={(e) => handleUpdateStudent(student.id, 'role', e.target.value)}
-                            className="w-full text-xs text-zinc-300 bg-black/60 border border-white/20 rounded px-2 py-0.5 focus:outline-none"
-                            placeholder="Role / Assignment"
-                          />
-                        </div>
-                      ) : (
-                        <div>
-                          <h4 className="text-base sm:text-lg font-bold text-white tracking-wide truncate">
-                            {student.name}
-                          </h4>
-                          <span className="text-xs text-zinc-400 font-mono block">
-                            {student.role || 'Project Member'}
-                          </span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Roll Number Badge */}
-                  <div className="flex items-center gap-3 shrink-0">
-                    <div className="text-right">
-                      <span className="text-[10px] font-mono text-zinc-500 block uppercase">Roll No.</span>
-                      {isEditing ? (
-                        <input
-                          type="text"
-                          value={student.rollNumber}
-                          onChange={(e) => handleUpdateStudent(student.id, 'rollNumber', e.target.value)}
-                          className="w-16 text-center text-sm font-mono font-bold text-[#ff5520] bg-black/60 border border-[#ff5520] rounded px-1 py-0.5 focus:outline-none"
-                        />
-                      ) : (
-                        <span className="px-3 py-1 rounded-lg bg-[#ff5520]/15 border border-[#ff5520]/30 text-[#ff5520] font-mono font-extrabold text-sm sm:text-base">
-                          {student.rollNumber}
-                        </span>
-                      )}
-                    </div>
-
-                    <button
-                      onClick={() => setEditingStudentId(isEditing ? null : student.id)}
-                      className="px-2 py-1 rounded text-[10px] font-mono text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 cursor-pointer"
-                      title="Click to edit name or roll number"
+          {/* 5 Prominent Student Member Cards across 5 columns */}
+          <div className="my-auto py-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-3 w-full">
+            {students.map((student) => (
+              <motion.div
+                key={student.id}
+                variants={itemVariants}
+                whileHover={{
+                  y: -8,
+                  scale: 1.035,
+                  borderColor: 'rgba(255, 85, 32, 0.65)',
+                  boxShadow: '0 20px 35px -10px rgba(255, 85, 32, 0.25)'
+                }}
+                className="p-3.5 sm:p-4 rounded-3xl bg-white/[0.04] border border-white/[0.1] hover:border-[#ff5520]/50 backdrop-blur-md flex flex-col justify-between transition-all shadow-lg group cursor-default"
+              >
+                <div className="space-y-3">
+                  {/* Top Row: Avatar Icon & Member Pill */}
+                  <div className="flex items-center justify-between">
+                    <motion.div
+                      whileHover={{ scale: 1.25, rotate: 10 }}
+                      className="w-10 h-10 rounded-2xl bg-[#ff5520]/15 border border-[#ff5520]/35 flex items-center justify-center text-[#ff5520]"
                     >
-                      {isEditing ? 'Save' : 'Edit'}
-                    </button>
+                      <User className="w-5 h-5" />
+                    </motion.div>
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#ff5520]/15 border border-[#ff5520]/30 text-[10px] font-mono font-bold text-[#ff5520] uppercase">
+                      Member
+                    </span>
                   </div>
-                </motion.div>
-              );
-            })}
+
+                  {/* Student Name */}
+                  <div className="pt-0.5">
+                    <h4 className="text-base sm:text-lg font-black text-white tracking-wide line-clamp-1 group-hover:text-[#ff5520] transition-colors">
+                      {student.name}
+                    </h4>
+                    <span className="text-[11px] sm:text-xs text-zinc-400 font-mono mt-0.5 block">
+                      Grade 11 Student
+                    </span>
+                  </div>
+                </div>
+
+                {/* Bottom: School Tag & E-Commerce */}
+                <div className="mt-3 pt-2.5 border-t border-white/[0.08] flex items-center justify-between">
+                  <span className="text-[10px] font-mono text-zinc-500 uppercase font-semibold truncate">
+                    IFA BORU BITE
+                  </span>
+                  <span className="text-[10px] font-mono text-[#ff5520] font-bold">
+                    E-Commerce
+                  </span>
+                </div>
+              </motion.div>
+            ))}
           </div>
 
           {/* Thank You & Closing Footer */}
-          <div className="pt-4 border-t border-white/[0.06] text-center space-y-3">
-            <h3 className="text-xl sm:text-2xl font-black text-white tracking-widest uppercase font-mono">
+          <motion.div variants={itemVariants} className="pt-1.5 sm:pt-2 border-t border-white/[0.08] text-center space-y-1.5 shrink-0">
+            <h3 className="text-xl sm:text-3xl font-black text-white tracking-widest uppercase font-mono">
               THANK YOU!
             </h3>
-            <p className="text-xs text-zinc-400 max-w-lg mx-auto">
+            <p className="text-xs sm:text-sm text-zinc-300 max-w-xl mx-auto font-medium">
               Presented to our teacher and fellow Grade 11 classmates at IFA BORU BITE SPECIAL SECONDARY SCHOOL.
             </p>
 
-            {/* Bottom Actions */}
-            <div className="pt-2 flex items-center justify-center gap-3">
-              <button
+            <div className="pt-0.5 flex items-center justify-center gap-3">
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.96 }}
                 onClick={() => {
                   audioManager.playTick();
                   onSelectSlide(0);
                 }}
-                className="px-5 py-2.5 rounded-full bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-white font-bold text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer transition-colors"
+                className="px-5 py-2 rounded-full bg-white/[0.06] hover:bg-white/[0.14] border border-white/15 text-white font-black text-xs uppercase tracking-wider flex items-center gap-1.5 cursor-pointer transition-colors"
               >
                 <Home className="w-3.5 h-3.5 text-[#ff5520]" />
                 <span>Return to Home</span>
-              </button>
+              </motion.button>
 
-              <button
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.96 }}
                 onClick={() => {
                   audioManager.playAction();
                   onSelectSlide(1);
                 }}
-                className="px-6 py-2.5 rounded-full bg-[#ff5520] hover:bg-[#ff6e3a] text-black font-extrabold text-xs uppercase tracking-wider flex items-center gap-2 cursor-pointer shadow-lg shadow-[#ff5520]/20 transition-transform hover:scale-105"
+                className="px-6 py-2 rounded-full bg-[#ff5520] hover:bg-[#ff6e3a] text-black font-black text-xs uppercase tracking-wider flex items-center gap-1.5 cursor-pointer shadow-lg shadow-[#ff5520]/25 transition-transform"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
                 <span>Restart Presentation</span>
-              </button>
+              </motion.button>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       )}
     </div>
   );

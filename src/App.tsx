@@ -5,9 +5,16 @@ import { Header } from './components/Header';
 import { PresentationBottomBar } from './components/PresentationBottomBar';
 import { CinematicSlideContent } from './components/CinematicSlideContent';
 import { PresentationOverviewModal } from './components/PresentationOverviewModal';
-import { SpeakerNotesModal } from './components/SpeakerNotesModal';
-import { SLIDES } from './data/slides';
 import { audioManager } from './utils/audio';
+import {
+  ChevronLeft,
+  ChevronRight,
+  Minimize2,
+  ExternalLink,
+  ZoomIn,
+  ZoomOut,
+  Maximize2
+} from 'lucide-react';
 
 export default function App() {
   // Total of 12 states (0: Opening, 1-11: Major sections)
@@ -17,37 +24,47 @@ export default function App() {
   const [slideDirection, setSlideDirection] = useState<'forward' | 'backward'>('forward');
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [isOverviewOpen, setIsOverviewOpen] = useState<boolean>(false);
-  const [isNotesOpen, setIsNotesOpen] = useState<boolean>(false);
   const [isAutoPlay, setIsAutoPlay] = useState<boolean>(false);
   const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
 
-  // Presenter Elapsed Timer
-  const [elapsedSeconds, setElapsedSeconds] = useState<number>(0);
-  const [isTimerRunning, setIsTimerRunning] = useState<boolean>(true);
+  // Functional Zoom State (70% to 150%)
+  const [zoomLevel, setZoomLevel] = useState<number>(100);
+
+  const handleZoomIn = useCallback(() => {
+    setZoomLevel((prev) => Math.min(150, prev + 10));
+  }, []);
+
+  const handleZoomOut = useCallback(() => {
+    setZoomLevel((prev) => Math.max(70, prev - 10));
+  }, []);
+
+  const handleResetZoom = useCallback(() => {
+    setZoomLevel(100);
+  }, []);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const touchStartY = useRef<number | null>(null);
 
-  // Timer interval
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isTimerRunning) {
-      interval = setInterval(() => {
-        setElapsedSeconds((prev) => prev + 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isTimerRunning]);
-
   // Handle Fullscreen change events
   useEffect(() => {
     const handleFullscreenChange = () => {
-      setIsFullscreen(Boolean(document.fullscreenElement));
+      const doc = document as unknown as {
+        fullscreenElement?: Element;
+        webkitFullscreenElement?: Element;
+      };
+      const isNativeFs = Boolean(doc.fullscreenElement || doc.webkitFullscreenElement);
+      if (!isNativeFs && isFullscreen) {
+        setIsFullscreen(false);
+      }
     };
     document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-  }, []);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    };
+  }, [isFullscreen]);
 
   // Navigation handlers
   const handleNext = useCallback(() => {
@@ -145,6 +162,13 @@ export default function App() {
           toggleFullscreen();
           break;
 
+        case 'Escape':
+          if (isFullscreen) {
+            e.preventDefault();
+            toggleFullscreen();
+          }
+          break;
+
         case 'o':
         case 'O':
         case 'm':
@@ -153,16 +177,24 @@ export default function App() {
           setIsOverviewOpen((prev) => !prev);
           break;
 
-        case 's':
-        case 'S':
-          e.preventDefault();
-          setIsNotesOpen((prev) => !prev);
-          break;
-
         case 'a':
         case 'A':
           e.preventDefault();
           setIsAutoPlay((prev) => !prev);
+          break;
+
+        case '+':
+        case '=':
+          e.preventDefault();
+          audioManager.playTick();
+          handleZoomIn();
+          break;
+
+        case '-':
+        case '_':
+          e.preventDefault();
+          audioManager.playTick();
+          handleZoomOut();
           break;
 
         // Number keys 0 to 9 jump to corresponding section
@@ -217,15 +249,52 @@ export default function App() {
     touchStartY.current = null;
   };
 
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen().catch(() => {});
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
+  const toggleFullscreen = useCallback(() => {
+    if (!isFullscreen) {
+      // Attempt native browser fullscreen
+      const elem = containerRef.current || document.documentElement;
+      const requestFs =
+        elem.requestFullscreen ||
+        (elem as unknown as { webkitRequestFullscreen?: () => Promise<void> }).webkitRequestFullscreen ||
+        (elem as unknown as { msRequestFullscreen?: () => Promise<void> }).msRequestFullscreen;
+
+      if (requestFs) {
+        try {
+          const promise = requestFs.call(elem);
+          if (promise && typeof promise.catch === 'function') {
+            promise.catch(() => {
+              // Iframe security restriction or denied - in-frame fullscreen fallback activates
+            });
+          }
+        } catch {
+          // Ignored
+        }
       }
+      setIsFullscreen(true);
+    } else {
+      // Exit fullscreen
+      const doc = document as unknown as {
+        exitFullscreen?: () => Promise<void>;
+        webkitExitFullscreen?: () => Promise<void>;
+        msExitFullscreen?: () => Promise<void>;
+        fullscreenElement?: Element;
+        webkitFullscreenElement?: Element;
+      };
+
+      if (doc.fullscreenElement || doc.webkitFullscreenElement) {
+        const exitFs = doc.exitFullscreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+        if (exitFs) {
+          try {
+            const promise = exitFs.call(document);
+            if (promise && typeof promise.catch === 'function') {
+              promise.catch(() => {});
+            }
+          } catch {}
+        }
+      }
+      setIsFullscreen(false);
     }
-  };
+  }, [isFullscreen]);
 
   const handleToggleSound = () => {
     const nextVal = !soundEnabled;
@@ -236,66 +305,178 @@ export default function App() {
     }
   };
 
-  // Provide speaker notes for the current section
-  const currentNoteSlide = SLIDES[Math.min(currentSlideIndex, SLIDES.length - 1)] || SLIDES[0];
-
   return (
     <div
       ref={containerRef}
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
-      className="relative w-screen h-screen bg-[#0c0c0e] text-[#f0f0f2] flex flex-col justify-between overflow-hidden select-none bg-slide-grid"
+      className={`bg-[#0c0c0e] text-[#f0f0f2] flex flex-col justify-between overflow-hidden select-none bg-slide-grid transition-all ${
+        isFullscreen
+          ? 'fixed inset-0 z-[99999] w-screen h-screen m-0 p-0 shadow-2xl'
+          : 'relative w-screen h-screen'
+      }`}
     >
-      {/* Top Header bar with CLICK → COMMERCE logo, Presenter timer, sound, notes & directory */}
-      <Header
-        isFullscreen={isFullscreen}
-        onToggleFullscreen={toggleFullscreen}
-        onOpenOverview={() => setIsOverviewOpen(true)}
-        onToggleNotes={() => setIsNotesOpen((prev) => !prev)}
-        isNotesOpen={isNotesOpen}
-        elapsedSeconds={elapsedSeconds}
-        isTimerRunning={isTimerRunning}
-        onToggleTimer={() => setIsTimerRunning((prev) => !prev)}
-        onResetTimer={() => setElapsedSeconds(0)}
-        soundEnabled={soundEnabled}
-        onToggleSound={handleToggleSound}
-        onGoToCover={() => handleSelectSlide(0)}
-      />
+      {/* Top Bar: In Fullscreen, use floating pill; otherwise use standard Header */}
+      {isFullscreen ? (
+        <div className="fixed top-4 right-4 sm:right-6 z-50 flex items-center gap-2 bg-[#0c0c0e]/95 backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-full shadow-2xl animate-in fade-in duration-200">
+          <span className="text-[11px] font-mono font-bold text-[#ff5520] tracking-wider uppercase pl-1 select-none">
+            {currentSlideIndex === 0 ? 'COVER' : `SLIDE ${currentSlideIndex.toString().padStart(2, '0')}/11`}
+          </span>
 
-      {/* Main Slide Presentation Stage with Smooth Motion Transition */}
-      <main className="relative flex-1 w-full overflow-hidden flex flex-col justify-start">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentSlideIndex}
-            initial={{ opacity: 0, x: slideDirection === 'forward' ? 25 : -25 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: slideDirection === 'forward' ? -25 : 25 }}
-            transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full h-full flex flex-col justify-start"
+          <div className="w-[1px] h-3.5 bg-white/20" />
+
+          {/* Quick Prev / Next */}
+          <button
+            onClick={() => {
+              audioManager.playSlideChange('prev');
+              handlePrev();
+            }}
+            disabled={currentSlideIndex === 0}
+            className="p-1 rounded-full text-zinc-400 hover:text-white disabled:opacity-30 cursor-pointer transition-colors"
+            title="Previous Slide (← / PageUp)"
           >
-            <CinematicSlideContent
-              slideId={currentSlideIndex}
-              onEnterPresentation={() => handleSelectSlide(1)}
-              onNext={handleNext}
-              onSelectSlide={handleSelectSlide}
-            />
-          </motion.div>
-        </AnimatePresence>
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => {
+              audioManager.playSlideChange('next');
+              handleNext();
+            }}
+            disabled={currentSlideIndex === TOTAL_PRESENTATION_SLIDES - 1}
+            className="p-1 rounded-full text-zinc-400 hover:text-white disabled:opacity-30 cursor-pointer transition-colors"
+            title="Next Slide (→ / Space / PageDown)"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+
+          <div className="w-[1px] h-3.5 bg-white/20" />
+
+          {/* Zoom Controls */}
+          <button
+            onClick={handleZoomOut}
+            disabled={zoomLevel <= 70}
+            className="p-1 text-zinc-400 hover:text-white disabled:opacity-30 cursor-pointer transition-colors"
+            title="Zoom Out (-)"
+          >
+            <ZoomOut className="w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={handleResetZoom}
+            className="text-[10px] font-mono font-bold text-zinc-300 hover:text-[#ff5520] px-1 cursor-pointer transition-colors"
+            title="Reset Zoom (100%)"
+          >
+            {zoomLevel}%
+          </button>
+          <button
+            onClick={handleZoomIn}
+            disabled={zoomLevel >= 150}
+            className="p-1 text-zinc-400 hover:text-white disabled:opacity-30 cursor-pointer transition-colors"
+            title="Zoom In (+)"
+          >
+            <ZoomIn className="w-3.5 h-3.5" />
+          </button>
+
+          <div className="w-[1px] h-3.5 bg-white/20" />
+
+          {/* Open in Dedicated Full Tab */}
+          <a
+            href={window.location.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1 text-[11px] font-mono text-zinc-300 hover:text-[#ff5520] px-1.5 transition-colors"
+            title="Open in Full Browser Tab (Projector Mode)"
+          >
+            <span>Full Tab</span>
+            <ExternalLink className="w-3 h-3" />
+          </a>
+
+          <div className="w-[1px] h-3.5 bg-white/20" />
+
+          {/* Exit Fullscreen */}
+          <button
+            onClick={toggleFullscreen}
+            className="flex items-center gap-1 text-xs font-mono font-bold bg-[#ff5520] hover:bg-[#e04515] text-white px-2.5 py-1 rounded-full cursor-pointer transition-colors shadow-md"
+            title="Exit Fullscreen (Esc or F)"
+          >
+            <Minimize2 className="w-3.5 h-3.5" />
+            <span>Exit (Esc)</span>
+          </button>
+        </div>
+      ) : (
+        <Header
+          isFullscreen={isFullscreen}
+          onToggleFullscreen={toggleFullscreen}
+          onOpenOverview={() => setIsOverviewOpen(true)}
+          soundEnabled={soundEnabled}
+          onToggleSound={handleToggleSound}
+          onGoToCover={() => handleSelectSlide(0)}
+          zoomLevel={zoomLevel}
+          onZoomIn={handleZoomIn}
+          onZoomOut={handleZoomOut}
+          onResetZoom={handleResetZoom}
+        />
+      )}
+
+      {/* Main Slide Presentation Stage with Smooth Motion Transition & Zoom Scaling */}
+      <main className="relative flex-1 w-full overflow-hidden flex flex-col justify-start">
+        <div
+          style={{
+            zoom: `${zoomLevel}%`
+          }}
+          className="w-full h-full flex flex-col justify-start transition-all duration-200"
+        >
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentSlideIndex}
+              initial={{
+                opacity: 0,
+                x: slideDirection === 'forward' ? 30 : -30,
+                scale: 0.985
+              }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{
+                opacity: 0,
+                x: slideDirection === 'forward' ? -30 : 30,
+                scale: 0.985
+              }}
+              transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+              className="w-full h-full flex flex-col justify-start"
+            >
+              <CinematicSlideContent
+                slideId={currentSlideIndex}
+                onEnterPresentation={() => handleSelectSlide(1)}
+                onNext={handleNext}
+                onSelectSlide={handleSelectSlide}
+              />
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </main>
 
-      {/* Bottom Bar: Home button, 00-11 slide indicators, scrub timeline, and navigation controls */}
-      <PresentationBottomBar
-        currentSlideIndex={currentSlideIndex}
-        totalSlides={TOTAL_PRESENTATION_SLIDES}
-        onPrev={handlePrev}
-        onNext={handleNext}
-        onSelectSlide={handleSelectSlide}
-        onGoHome={() => handleSelectSlide(0)}
-        isAutoPlay={isAutoPlay}
-        onToggleAutoPlay={() => setIsAutoPlay((prev) => !prev)}
-        isFullscreen={isFullscreen}
-        onToggleFullscreen={toggleFullscreen}
-      />
+      {/* Bottom Bar: hidden or minimal scrub line in Fullscreen, full controls in normal mode */}
+      {!isFullscreen ? (
+        <PresentationBottomBar
+          currentSlideIndex={currentSlideIndex}
+          totalSlides={TOTAL_PRESENTATION_SLIDES}
+          onPrev={handlePrev}
+          onNext={handleNext}
+          onSelectSlide={handleSelectSlide}
+          onGoHome={() => handleSelectSlide(0)}
+          isAutoPlay={isAutoPlay}
+          onToggleAutoPlay={() => setIsAutoPlay((prev) => !prev)}
+          isFullscreen={isFullscreen}
+          onToggleFullscreen={toggleFullscreen}
+        />
+      ) : (
+        <div className="fixed bottom-0 left-0 right-0 z-40 h-1 bg-white/[0.08]">
+          <div
+            className="h-full bg-gradient-to-r from-[#ff5520] to-[#ff7744] transition-all duration-300"
+            style={{
+              width: `${currentSlideIndex === 0 ? 0 : (currentSlideIndex / (TOTAL_PRESENTATION_SLIDES - 1)) * 100}%`
+            }}
+          />
+        </div>
+      )}
 
       {/* Presentation Overview Grid Modal (11 sections) */}
       <PresentationOverviewModal
@@ -303,13 +484,6 @@ export default function App() {
         onClose={() => setIsOverviewOpen(false)}
         currentIndex={currentSlideIndex}
         onSelectSlide={handleSelectSlide}
-      />
-
-      {/* Speaker Notes Drawer */}
-      <SpeakerNotesModal
-        isOpen={isNotesOpen}
-        onClose={() => setIsNotesOpen(false)}
-        slide={currentNoteSlide}
       />
     </div>
   );

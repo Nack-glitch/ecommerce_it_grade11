@@ -35,7 +35,7 @@ export const PresentationBottomBar: React.FC<PresentationBottomBarProps> = ({
 
   return (
     <footer className="relative z-30 px-5 sm:px-10 py-3.5 sm:py-4 border-t border-white/[0.06] bg-[#08090b]/90 backdrop-blur-md">
-      <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
+      <div className="flex items-center justify-between gap-4 w-full">
         {/* Left: Home Button & Slide Indicator */}
         <div className="flex items-center gap-3 shrink-0">
           <button
@@ -97,7 +97,7 @@ export const PresentationBottomBar: React.FC<PresentationBottomBarProps> = ({
                   idx === 0
                     ? "Opening Screen"
                     : idx === totalSlides - 1
-                    ? "Group Members / Credits"
+                    ? "Group Members"
                     : `Jump to Slide ${idx.toString().padStart(2, '0')}`
                 }
                 aria-label={`Jump to slide ${idx}`}
@@ -177,11 +177,15 @@ export const PresentationBottomBar: React.FC<PresentationBottomBarProps> = ({
               audioManager.playTick();
               onToggleFullscreen();
             }}
-            className="p-2 sm:p-2.5 rounded-full bg-white/[0.03] border border-white/[0.08] hover:border-white/20 text-zinc-300 hover:text-white transition-all cursor-pointer hidden sm:block"
+            className={`p-2 sm:p-2.5 rounded-full border transition-all cursor-pointer hidden sm:block ${
+              isFullscreen
+                ? 'bg-[#ff5520] border-[#ff5520] text-white shadow-lg shadow-[#ff5520]/25'
+                : 'bg-white/[0.03] border-white/[0.08] hover:border-white/20 text-zinc-300 hover:text-white'
+            }`}
             title={isFullscreen ? 'Exit Fullscreen (F / Esc)' : 'Enter Fullscreen (F)'}
             aria-label="Toggle Fullscreen"
           >
-            {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            {isFullscreen ? <Minimize2 className="w-3.5 h-3.5 text-white" /> : <Maximize2 className="w-3.5 h-3.5" />}
           </button>
         </div>
       </div>

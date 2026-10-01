@@ -1,17 +1,10 @@
 import React, { useState } from 'react';
-import { motion } from 'motion/react';
 import {
   Smartphone,
-  CreditCard,
   MapPin,
   ShieldCheck,
-  Building2,
-  CheckCircle2,
-  Truck,
   MessageSquare,
-  AlertTriangle,
-  Sparkles,
-  ArrowRight
+  AlertTriangle
 } from 'lucide-react';
 import { audioManager } from '../utils/audio';
 
@@ -95,25 +88,25 @@ export const EthiopiaSectionView: React.FC = () => {
   ];
 
   return (
-    <div className="w-full flex flex-col justify-start py-1 max-w-6xl mx-auto space-y-3.5 pb-4">
+    <div className="w-full flex flex-col justify-start space-y-2.5">
       {/* 1. Simple Definition Statement */}
-      <div className="p-4 sm:p-5 rounded-2xl bg-white/[0.03] border border-[#ff5520]/25 relative overflow-hidden backdrop-blur-md">
-        <div className="absolute top-0 left-0 w-1.5 h-full bg-[#ff5520]" />
-        <span className="text-[11px] font-mono text-[#ff5520] uppercase font-bold tracking-widest block mb-1">
+      <div className="p-3.5 sm:p-4 rounded-2xl bg-white/[0.04] border border-[#ff5520]/30 relative overflow-hidden backdrop-blur-md shadow-md">
+        <div className="absolute top-0 left-0 w-2 h-full bg-[#ff5520]" />
+        <span className="text-xs sm:text-sm font-mono text-[#ff5520] uppercase font-black tracking-widest block mb-1">
           Simple Definition · Grade 11 IT Unit 1.3.4
         </span>
-        <p className="text-sm sm:text-base md:text-lg text-white font-medium leading-relaxed">
-          “In Ethiopia, <strong className="text-[#ff5520]">E-Commerce</strong> means buying and selling products on smartphones—mainly using <span className="underline decoration-[#ff5520] underline-offset-4 font-semibold">Telebirr & CBE Birr</span> for payment and <span className="underline decoration-[#ff5520] underline-offset-4 font-semibold">Telegram channels</span> as stores, with motorcycle couriers delivering to landmarks.”
+        <p className="text-sm sm:text-lg md:text-xl text-white font-medium leading-relaxed pl-1">
+          “In Ethiopia, <strong className="text-[#ff5520] font-black">E-Commerce</strong> means buying and selling products on smartphones—mainly using <span className="underline decoration-[#ff5520] decoration-2 underline-offset-4 font-bold text-white">Telebirr & CBE Birr</span> for payment and <span className="underline decoration-[#ff5520] decoration-2 underline-offset-4 font-bold text-white">Telegram channels</span> as stores, with motorcycle couriers delivering to landmarks.”
         </p>
       </div>
 
-      {/* 2. The 4 Core Situations in Ethiopia (Simple, high-impact 4 cards) */}
+      {/* 2. The 4 Core Situations in Ethiopia */}
       <div>
-        <div className="flex items-center justify-between mb-2 px-1">
-          <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider font-bold">
+        <div className="flex items-center justify-between mb-1.5 px-1">
+          <span className="text-xs sm:text-sm font-mono text-zinc-200 uppercase tracking-wider font-black">
             The 4 Key Situations in Ethiopia:
           </span>
-          <span className="text-[11px] font-mono text-[#ff5520]">Current Market Realities</span>
+          <span className="text-xs sm:text-sm font-mono font-bold text-[#ff5520]">Current Market Realities</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
@@ -122,19 +115,19 @@ export const EthiopiaSectionView: React.FC = () => {
             return (
               <div
                 key={sit.id}
-                className="p-3.5 rounded-2xl bg-white/[0.02] border border-white/[0.07] hover:border-[#ff5520]/40 transition-all flex flex-col justify-between space-y-2"
+                className="p-3 sm:p-3.5 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:border-[#ff5520]/40 transition-all flex flex-col justify-between space-y-1.5"
               >
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#ff5520]/15 border border-[#ff5520]/30 flex items-center justify-center text-[#ff5520]">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <div className="w-8 h-8 rounded-xl bg-[#ff5520]/20 border border-[#ff5520]/35 flex items-center justify-center text-[#ff5520]">
                       <Icon className="w-4 h-4" />
                     </div>
-                    <span className="text-[10px] font-mono font-bold text-[#ff5520] px-2 py-0.5 rounded bg-[#ff5520]/10">
+                    <span className="text-xs font-mono font-bold text-[#ff5520] px-2 py-0.5 rounded bg-[#ff5520]/15">
                       {sit.highlight}
                     </span>
                   </div>
-                  <h4 className="text-sm font-bold text-white leading-tight">{sit.title}</h4>
-                  <p className="text-xs text-zinc-300 mt-1.5 leading-relaxed">{sit.desc}</p>
+                  <h4 className="text-sm sm:text-base font-black text-white leading-tight">{sit.title}</h4>
+                  <p className="text-xs sm:text-sm text-zinc-200 mt-1 leading-relaxed font-medium">{sit.desc}</p>
                 </div>
               </div>
             );
@@ -142,13 +135,13 @@ export const EthiopiaSectionView: React.FC = () => {
         </div>
       </div>
 
-      {/* 3. Top Ethiopian Company Examples (Clean grid of 6 key companies) */}
+      {/* 3. Top Ethiopian Company Examples */}
       <div>
-        <div className="flex items-center justify-between mb-2 px-1">
-          <span className="text-xs font-mono text-zinc-400 uppercase tracking-wider font-bold">
+        <div className="flex items-center justify-between mb-1.5 px-1">
+          <span className="text-xs sm:text-sm font-mono text-zinc-200 uppercase tracking-wider font-black">
             Top Ethiopian E-Commerce Examples:
           </span>
-          <span className="text-[11px] font-mono text-zinc-500">Local Leaders</span>
+          <span className="text-xs font-mono font-bold text-zinc-400">Local Leaders</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
@@ -159,33 +152,35 @@ export const EthiopiaSectionView: React.FC = () => {
                 audioManager.playTick();
                 setSelectedExample(selectedExample === idx ? null : idx);
               }}
-              className={`p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+              className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                 selectedExample === idx
-                  ? 'bg-[#ff5520]/15 border-[#ff5520] ring-1 ring-[#ff5520]/40'
-                  : 'bg-white/[0.02] border-white/[0.06] hover:border-white/20 hover:bg-white/[0.04]'
+                  ? 'bg-[#ff5520]/20 border-[#ff5520] ring-2 ring-[#ff5520]/40'
+                  : 'bg-white/[0.03] border-white/[0.08] hover:border-white/20 hover:bg-white/[0.05]'
               }`}
             >
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs font-mono font-black text-[#ff5520]">{ex.iconText}</span>
-                  <span className="text-[9px] font-mono text-zinc-400 px-1.5 py-0.5 rounded bg-white/5">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs sm:text-sm font-mono font-black text-[#ff5520]">{ex.iconText}</span>
+                  <span className="text-[10px] sm:text-xs font-mono font-bold text-zinc-300 px-1.5 py-0.5 rounded bg-white/10">
                     {ex.badge}
                   </span>
                 </div>
-                <h5 className="text-xs font-bold text-white truncate">{ex.name}</h5>
-                <p className="text-[10px] text-zinc-400 mt-0.5 line-clamp-1">{ex.role}</p>
+                <h5 className="text-xs sm:text-sm font-black text-white truncate">{ex.name}</h5>
+                <p className="text-[11px] sm:text-xs text-zinc-300 mt-0.5 line-clamp-1 font-medium">{ex.role}</p>
               </div>
-              <span className="text-[9px] font-mono text-emerald-400 pt-2 block truncate">{ex.stat}</span>
+              <span className="text-[10px] sm:text-xs font-mono font-bold text-emerald-400 pt-1.5 block truncate">
+                {ex.stat}
+              </span>
             </div>
           ))}
         </div>
       </div>
 
       {/* 4. Grade 11 IT Textbook Note */}
-      <div className="p-3.5 rounded-xl bg-amber-500/[0.05] border border-amber-500/20 flex items-center gap-3">
+      <div className="p-3 rounded-xl bg-amber-500/[0.08] border border-amber-500/30 flex items-center gap-3">
         <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-        <p className="text-xs text-zinc-300">
-          <strong className="text-white">Textbook Key Point:</strong> E-commerce is still developing in Ethiopia. It requires expanding nationwide internet coverage, reliable transport systems, and digital trade laws.
+        <p className="text-xs sm:text-sm text-zinc-200 font-medium">
+          <strong className="text-white font-bold">Textbook Key Point:</strong> E-commerce is still developing in Ethiopia. It requires expanding nationwide internet coverage, reliable transport systems, and digital trade laws.
         </p>
       </div>
     </div>

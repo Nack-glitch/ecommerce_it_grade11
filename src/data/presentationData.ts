@@ -1,3 +1,5 @@
+import sidamaHoneyImg from '../assets/images/sidama_white_honey_1790875288850.jpg';
+
 export interface PresentationSlide {
   id: number;
   slideNumber: string; // e.g. "00", "01", ..., "12"
@@ -87,25 +89,25 @@ export const PRESENTATION_SECTIONS: PresentationSlide[] = [
   {
     id: 11,
     slideNumber: "11",
-    title: "Group Members / Credits",
-    subtitle: "IFA BORU BITE SPECIAL SECONDARY SCHOOL · Grade 11 IT Unit 1.3.4",
-    category: "CREDITS"
+    title: "Group Members",
+    subtitle: "IFA BORU BITE SPECIAL SECONDARY SCHOOL · E-Commerce",
+    category: "MEMBERS"
   }
 ];
 
 export interface StudentCredit {
   id: number;
   name: string;
-  rollNumber: string;
+  rollNumber?: string;
   role?: string;
 }
 
 export const DEFAULT_STUDENTS: StudentCredit[] = [
-  { id: 1, name: "Student One", rollNumber: "001", role: "Presenter & Research" },
-  { id: 2, name: "Student Two", rollNumber: "002", role: "Slide Content & Figures" },
-  { id: 3, name: "Student Three", rollNumber: "003", role: "Ethiopian Commerce Case Study" },
-  { id: 4, name: "Student Four", rollNumber: "004", role: "Demo Store & Workflows" },
-  { id: 5, name: "Student Five", rollNumber: "005", role: "Technical Delivery & Q&A" }
+  { id: 1, name: "Naol Gudeta" },
+  { id: 2, name: "Yerosan Genanew" },
+  { id: 3, name: "Milkesa Tesfaye" },
+  { id: 4, name: "Fedhi Mitiku" },
+  { id: 5, name: "Kidist Hailu" }
 ];
 
 export interface DemoProduct {
@@ -171,7 +173,7 @@ export const DEMO_PRODUCTS: DemoProduct[] = [
     rating: 4.9,
     reviewsCount: 64,
     inStock: true,
-    image: "https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=800&auto=format&fit=crop&q=80",
+    image: sidamaHoneyImg,
     description: "Raw, unpasteurized white honey sustainably harvested from wild forest flora in the southern Ethiopian highlands.",
     badge: "Organic",
     features: ["100% Raw & unprocessed", "Glass jar packaging (1,000g)", "Zero artificial sugars", "Medicinal enzyme rich"]
