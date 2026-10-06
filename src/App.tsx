@@ -13,7 +13,8 @@ import {
   ExternalLink,
   ZoomIn,
   ZoomOut,
-  Maximize2
+  Maximize2,
+  Menu
 } from 'lucide-react';
 
 export default function App() {
@@ -378,17 +379,19 @@ export default function App() {
 
           <div className="w-[1px] h-3.5 bg-white/20" />
 
-          {/* Open in Dedicated Full Tab */}
-          <a
-            href={window.location.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 text-[11px] font-mono text-zinc-300 hover:text-[#ff5520] px-1.5 transition-colors"
-            title="Open in Full Browser Tab (Projector Mode)"
+          {/* Hamburger Menu with All Content Directory - Wide & Bold */}
+          <button
+            onClick={() => {
+              audioManager.playTick();
+              setIsOverviewOpen(true);
+            }}
+            className="flex items-center gap-2 text-xs sm:text-sm font-mono font-black text-white bg-white/10 hover:bg-[#ff5520] hover:text-black px-3 sm:px-3.5 py-1.5 rounded-full border border-white/20 hover:border-[#ff5520] transition-all cursor-pointer shadow-md uppercase tracking-wider"
+            title="All Content Menu · Slide Directory & Outline (Key: O or M)"
+            aria-label="Open Content Directory Menu"
           >
-            <span>Full Tab</span>
-            <ExternalLink className="w-3 h-3" />
-          </a>
+            <Menu className="w-4 h-4 text-[#ff5520] stroke-[2.5]" />
+            <span>MENU</span>
+          </button>
 
           <div className="w-[1px] h-3.5 bg-white/20" />
 

@@ -158,11 +158,12 @@ export const Header: React.FC<HeaderProps> = ({
             audioManager.playTick();
             onOpenOverview();
           }}
-          className="p-2 sm:p-2.5 rounded-full bg-white/[0.03] border border-white/[0.08] hover:border-[#ff5520]/50 text-zinc-300 hover:text-[#ff5520] transition-all cursor-pointer"
+          className="px-2.5 sm:px-3 py-2 rounded-full bg-white/[0.04] border border-white/[0.1] hover:border-[#ff5520] hover:bg-white/[0.08] text-white hover:text-[#ff5520] transition-all cursor-pointer flex items-center gap-1.5 font-mono font-black text-xs uppercase shadow-sm"
           title="All Presentation Slides Directory (Key: O or M)"
           aria-label="Slide Menu"
         >
-          <Menu className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+          <Menu className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ff5520] stroke-[2.5]" />
+          <span className="hidden sm:inline">MENU</span>
         </button>
       </div>
     </header>

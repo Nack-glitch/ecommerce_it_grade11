@@ -26,6 +26,9 @@ import { VideoJourneyView } from './VideoJourneyView';
 import { EthiopiaSectionView } from './EthiopiaSectionView';
 import { DEFAULT_STUDENTS, StudentCredit } from '../data/presentationData';
 
+const LINE1_CHARS = ['E', '-'];
+const LINE2_CHARS = ['C', 'O', 'M', 'M', 'E', 'R', 'C', 'E'];
+
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
   show: {
@@ -100,119 +103,264 @@ export const CinematicSlideContent: React.FC<CinematicSlideProps> = ({
       }`}
     >
       {/* =========================================================================
-          SLIDE 00: OPENING SCREEN (TRUE FULL SCREEN KEYNOTE)
+          SLIDE 00: HIGH-TECH IT PRESENTATION LANDING PAGE
           ========================================================================= */}
       {slideId === 0 && (
-        <div className="relative w-full h-full flex flex-col justify-between py-2 sm:py-4 text-left overflow-hidden">
-          {/* Ambient Glow */}
-          <div className="absolute -top-20 -left-16 w-80 h-80 rounded-full bg-[#ff5520]/20 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-20 -right-16 w-96 h-96 rounded-full bg-red-600/15 blur-3xl pointer-events-none" />
+        <div className="relative w-full h-full flex flex-col justify-between py-3 sm:py-4 px-3 sm:px-8 text-left overflow-hidden bg-[#0c0d10] rounded-3xl border border-white/[0.08] shadow-2xl">
+          {/* Faint high-tech grid overlay */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff0a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff0a_1px,transparent_1px)] bg-[size:28px_28px] pointer-events-none" />
 
-          {/* Top Banner Row */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shrink-0">
+          {/* Ambient Radial Glowing Orbs */}
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[300px] bg-[#ff5520]/15 rounded-full blur-[110px] pointer-events-none -z-0" />
+          <div className="absolute -bottom-16 -right-16 w-80 h-80 bg-red-600/10 rounded-full blur-[100px] pointer-events-none -z-0" />
+          <div className="absolute -top-12 -left-12 w-72 h-72 bg-amber-500/10 rounded-full blur-[90px] pointer-events-none -z-0" />
+
+          {/* Top Academic & Curriculum Information */}
+          <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 shrink-0">
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
               className="flex items-center gap-2.5"
             >
-              <span className="w-2.5 h-2.5 rounded-full bg-[#ff5520] animate-ping" />
-              <span className="text-xs sm:text-sm md:text-base font-mono font-bold tracking-[0.22em] text-zinc-300 uppercase">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#ff5520] shadow-[0_0_10px_#ff5520] animate-ping" />
+              <span className="text-xs sm:text-sm font-mono font-bold tracking-[0.22em] text-zinc-300 uppercase">
                 GRADE 11 INFORMATION TECHNOLOGY · UNIT 1.3.4
               </span>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: -12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 }}
-              className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-xl bg-[#ff5520]/15 border border-[#ff5520]/40 text-white backdrop-blur-md shadow-md shadow-[#ff5520]/10 w-fit"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/[0.05] border border-white/10 text-white backdrop-blur-md shadow-md w-fit"
             >
               <GraduationCap className="w-4 h-4 text-[#ff5520]" />
-              <span className="text-xs sm:text-sm md:text-base font-black tracking-widest uppercase font-mono text-[#ff5520]">
+              <span className="text-xs sm:text-sm font-black tracking-widest uppercase font-mono text-[#ff5520]">
                 IFA BORU BITE SPECIAL SECONDARY SCHOOL
               </span>
             </motion.div>
           </div>
 
-          {/* Center Epic Title & Narrative */}
-          <div className="my-auto space-y-2.5 sm:space-y-3.5 py-1">
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.15 }}
-              className="space-y-1 max-w-full"
-            >
-              <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[5rem] xl:text-[5.5rem] font-black tracking-tight uppercase leading-none select-none max-w-full">
-                <span className="text-white">E-</span>
-                <span className="text-[#ff5520]">COMMERCE</span>
-              </h1>
-              <div className="w-32 h-1.5 bg-gradient-to-r from-[#ff5520] to-transparent rounded-full shadow-[0_0_12px_rgba(255,85,32,0.9)]" />
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-zinc-100 tracking-tight pt-0.5">
-                Electronic Commerce
-              </h2>
-            </motion.div>
+          {/* Center Section: High-Tech Digital Display Headline Animation & Glowing Line */}
+          <div className="relative z-10 my-auto py-1 sm:py-2 flex flex-col items-start space-y-3 sm:space-y-4 w-full max-w-7xl">
+            {/* Cybernetic Framing Container with Corner Bracket Accents */}
+            <div className="relative px-6 sm:px-10 py-3 sm:py-5 rounded-3xl bg-white/[0.02] border border-white/[0.07] overflow-visible w-fit max-w-full">
+              {/* Corner Bracket Reticles */}
+              <div className="absolute -top-1.5 -left-1.5 w-4 h-4 border-t-2 border-l-2 border-[#ff5520] pointer-events-none" />
+              <div className="absolute -top-1.5 -right-1.5 w-4 h-4 border-t-2 border-r-2 border-[#ff5520] pointer-events-none" />
+              <div className="absolute -bottom-1.5 -left-1.5 w-4 h-4 border-b-2 border-l-2 border-[#ff5520] pointer-events-none" />
+              <div className="absolute -bottom-1.5 -right-1.5 w-4 h-4 border-b-2 border-r-2 border-[#ff5520] pointer-events-none" />
 
-            <motion.p
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.22 }}
-              className="text-base sm:text-lg md:text-xl text-zinc-200 max-w-3xl leading-relaxed font-normal"
-            >
-              A modern presentation about how technology transformed buying, selling, payments, logistics, and digital business.
-            </motion.p>
+              {/* Rapid Drop-in Blur-to-Sharp Letter-by-Letter Headline - Starting from Beginning (Left) */}
+              <div className="overflow-visible select-none flex flex-col items-start text-left leading-[0.82] tracking-tighter pr-6 sm:pr-12">
+                {/* Line 1: E- (Large, bold, visible from far away, never hidden) */}
+                <div className="flex items-center justify-start flex-nowrap">
+                  {LINE1_CHARS.map((char, idx) => (
+                    <motion.span
+                      key={`line1-${char}-${idx}`}
+                      initial={{
+                        opacity: 0,
+                        y: -70,
+                        scale: 1.25,
+                        filter: 'blur(16px)',
+                      }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        filter: 'blur(0px)',
+                      }}
+                      transition={{
+                        duration: 0.45,
+                        delay: 0.1 + idx * 0.06,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
+                      whileHover={{
+                        y: -6,
+                        scale: 1.05,
+                        transition: { duration: 0.2 },
+                      }}
+                      whileTap={{ scale: 0.96 }}
+                      onHoverStart={() => audioManager.playTick()}
+                      className="inline-block shrink-0 text-6xl sm:text-7xl md:text-8xl lg:text-[9.2rem] xl:text-[9.4rem] 2xl:text-[10.5rem] font-black text-white drop-shadow-[0_0_42px_rgba(255,255,255,0.45)] cursor-pointer select-none"
+                    >
+                      {char}
+                    </motion.span>
+                  ))}
+                </div>
+
+                {/* Line 2: COMMERCE (Large, vibrant electric orange, visible from far away, never hidden) */}
+                <div className="flex items-center justify-start flex-nowrap -mt-1 sm:-mt-2 md:-mt-3">
+                  {LINE2_CHARS.map((char, idx) => (
+                    <motion.span
+                      key={`line2-${char}-${idx}`}
+                      initial={{
+                        opacity: 0,
+                        y: -70,
+                        scale: 1.25,
+                        filter: 'blur(16px)',
+                      }}
+                      animate={{
+                        opacity: 1,
+                        y: 0,
+                        scale: 1,
+                        filter: 'blur(0px)',
+                      }}
+                      transition={{
+                        duration: 0.45,
+                        delay: 0.2 + idx * 0.035,
+                        ease: [0.16, 1, 0.3, 1],
+                      }}
+                      whileHover={{
+                        y: -6,
+                        scale: 1.05,
+                        transition: { duration: 0.2 },
+                      }}
+                      whileTap={{ scale: 0.96 }}
+                      onHoverStart={() => audioManager.playTick()}
+                      className="inline-block shrink-0 text-6xl sm:text-7xl md:text-8xl lg:text-[9.2rem] xl:text-[9.4rem] 2xl:text-[10.5rem] font-black text-[#ff5520] drop-shadow-[0_0_50px_rgba(255,85,32,0.65)] cursor-pointer select-none"
+                    >
+                      {char}
+                    </motion.span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Glowing Orange Horizontal Line Expanding from Left with Laser Scan Beam */}
+            <div className="relative w-full max-w-2xl sm:max-w-3xl overflow-hidden py-1">
+              <motion.div
+                initial={{ scaleX: 0, opacity: 0 }}
+                animate={{ scaleX: 1, opacity: 1 }}
+                transition={{
+                  duration: 0.85,
+                  delay: 0.55,
+                  ease: [0.16, 1, 0.3, 1],
+                }}
+                className="relative h-1.5 sm:h-2 w-full origin-left bg-gradient-to-r from-transparent via-[#ff5520] to-transparent rounded-full shadow-[0_0_20px_#ff5520,0_0_38px_rgba(255,85,32,0.85)]"
+              >
+                {/* Continuous Laser Scanning Sweep */}
+                <motion.div
+                  animate={{ x: ['-100%', '300%'] }}
+                  transition={{
+                    duration: 2.6,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                  }}
+                  className="absolute inset-0 w-1/4 bg-gradient-to-r from-transparent via-white to-transparent opacity-90 blur-[1px]"
+                />
+              </motion.div>
+            </div>
+
+            {/* Clear, highly readable description under title with 10% metric pill */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 text-left">
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#ff5520]/20 border border-[#ff5520]/50 text-[#ff5520] font-mono text-xs font-bold tracking-wider shrink-0 w-fit">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#ff5520] animate-pulse" />
+                10% GLOBAL RETAIL & GROWING
+              </span>
+              <motion.p
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.45, delay: 0.7 }}
+                className="text-sm sm:text-base md:text-lg font-medium text-zinc-300 max-w-2xl leading-relaxed"
+              >
+                The digital architecture of modern commerce: online storefronts, electronic payments, cloud networks, and automated delivery.
+              </motion.p>
+            </div>
           </div>
 
-          {/* Bottom Area: 5 Network Badges + Enter Presentation CTA */}
-          <div className="space-y-2.5 shrink-0 pt-1 border-t border-white/[0.08]">
-            <motion.div
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5"
-            >
+          {/* Bottom Section: 5 Floating Bobbing Glassmorphism Cards + Neon CTA Button */}
+          <div className="relative z-10 space-y-2.5 sm:space-y-3 shrink-0 pt-1.5 border-t border-white/[0.08]">
+            {/* Row of 5 Dark-Mode Glassmorphism Cards Floating with Continuous Y-axis Bobbing Animation */}
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 sm:gap-2.5">
               {[
-                { label: 'Shopping', icon: ShoppingCart },
-                { label: 'Payments', icon: DollarSign },
-                { label: 'Logistics', icon: Truck },
-                { label: 'Digital Networks', icon: Globe },
-                { label: 'Mobile Commerce', icon: Sparkles }
-              ].map((pillar) => {
-                const Icon = pillar.icon;
+                { title: 'Storefront', sub: 'Web, App & Catalog', icon: ShoppingCart },
+                { title: 'Payments', sub: 'Gateway & Mobile Rails', icon: DollarSign },
+                { title: 'Networks', sub: 'Global Cloud & CDN', icon: Globe },
+                { title: 'Logistics', sub: 'Warehousing & Fleet', icon: Truck },
+                { title: 'Security', sub: 'SSL, Fraud & Trust', icon: ShieldCheck },
+              ].map((card, idx) => {
+                const Icon = card.icon;
                 return (
-                  <div
-                    key={pillar.label}
-                    className="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-white/[0.04] border border-white/[0.1] backdrop-blur-sm shadow-sm"
+                  <motion.div
+                    key={card.title}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{
+                      opacity: 1,
+                      y: [0, -5, 0],
+                    }}
+                    transition={{
+                      opacity: { duration: 0.4, delay: 0.65 + idx * 0.07 },
+                      y: {
+                        repeat: Infinity,
+                        duration: 3.2 + (idx % 3) * 0.6,
+                        ease: 'easeInOut',
+                        delay: idx * 0.25,
+                      },
+                    }}
+                    whileHover={{
+                      y: -8,
+                      scale: 1.025,
+                      borderColor: 'rgba(255, 85, 32, 0.8)',
+                      boxShadow: '0 10px 25px -5px rgba(255,85,32,0.3)',
+                    }}
+                    whileTap={{ scale: 0.97 }}
+                    onHoverStart={() => audioManager.playTick()}
+                    className="p-2 sm:p-2.5 rounded-2xl bg-white/[0.04] backdrop-blur-xl border border-white/10 hover:border-[#ff5520]/80 transition-colors shadow-[0_8px_30px_rgb(0,0,0,0.4)] flex flex-col justify-between cursor-pointer"
                   >
-                    <Icon className="w-4 h-4 text-[#ff5520] shrink-0" />
-                    <span className="text-xs sm:text-sm font-bold font-mono text-zinc-100 truncate">
-                      {pillar.label}
-                    </span>
-                  </div>
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="w-7 h-7 rounded-xl bg-[#ff5520]/15 border border-[#ff5520]/30 flex items-center justify-center">
+                        <Icon className="w-3.5 h-3.5 text-[#ff5520] stroke-[2.2]" />
+                      </div>
+                      <span className="text-[10px] font-mono font-bold text-zinc-500">0{idx + 1}</span>
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-black text-white">{card.title}</h4>
+                      <p className="text-[10px] sm:text-[11px] text-zinc-400 font-medium truncate mt-0.5">{card.sub}</p>
+                    </div>
+                  </motion.div>
                 );
               })}
-            </motion.div>
+            </div>
 
+            {/* Very Bottom: Large 'ENTER PRESENTATION' Button with Glowing Neon Border + Blinking Prompt on Right */}
             <motion.div
-              initial={{ opacity: 0, y: 15 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.38 }}
-              className="flex items-center justify-between pt-0.5"
+              transition={{ duration: 0.45, delay: 0.9 }}
+              className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-0.5"
             >
-              <button
+              {/* Large CTA with Neon Glowing Border */}
+              <motion.button
                 onClick={() => {
                   audioManager.playAction();
                   onEnterPresentation();
                 }}
-                className="group inline-flex items-center gap-3 px-8 py-3.5 sm:px-9 sm:py-4 rounded-full bg-[#ff5520] hover:bg-[#ff6e3a] text-black font-black text-sm sm:text-base md:text-lg tracking-wider uppercase transition-all duration-200 shadow-xl shadow-[#ff5520]/35 cursor-pointer transform hover:-translate-y-0.5"
+                whileHover={{
+                  scale: 1.03,
+                  boxShadow: '0 0 35px rgba(255, 85, 32, 0.8), 0 0 15px #ff5520',
+                }}
+                whileTap={{ scale: 0.97 }}
+                className="relative group px-6 sm:px-8 py-2.5 sm:py-3 rounded-full bg-[#ff5520] hover:bg-[#ff6e3a] text-black font-black text-xs sm:text-sm md:text-base tracking-widest uppercase transition-all cursor-pointer shadow-[0_0_22px_rgba(255,85,32,0.55)] border-2 border-white/90 hover:border-white flex items-center justify-center gap-2.5 w-fit"
               >
                 <span>ENTER PRESENTATION</span>
-                <ArrowRight className="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1.5" />
-              </button>
+                <ArrowRight className="w-4 h-4 sm:w-4.5 sm:h-4.5 transition-transform duration-200 group-hover:translate-x-1.5 stroke-[3]" />
+              </motion.button>
 
-              <span className="hidden sm:inline-block text-xs sm:text-sm font-mono text-zinc-400">
-                Press <kbd className="px-2 py-0.5 rounded bg-white/10 text-white font-bold">Space</kbd> or <kbd className="px-2 py-0.5 rounded bg-white/10 text-white font-bold">→</kbd> to begin
-              </span>
+              {/* Small Blinking Prompt on Right Side */}
+              <motion.div
+                animate={{ opacity: [1, 0.25, 1] }}
+                transition={{
+                  repeat: Infinity,
+                  duration: 1.4,
+                  ease: 'easeInOut',
+                }}
+                className="flex items-center gap-2 text-xs sm:text-sm font-mono text-zinc-300 font-bold"
+              >
+                <span className="w-2 h-2 rounded-full bg-[#ff5520] shadow-[0_0_8px_#ff5520]" />
+                <span>Press Space or -&gt; to begin</span>
+              </motion.div>
             </motion.div>
           </div>
         </div>
